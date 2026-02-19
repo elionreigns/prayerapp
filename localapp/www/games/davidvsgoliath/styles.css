@@ -1,0 +1,1039 @@
+/* styles.css for David's Triumph - v217: Adjusted canvas size for browser, added tiny 2px border, ensured grass proportions */
+
+/* Reset and Base Styles */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    font-family: 'Orbitron', sans-serif;
+    background: #0a0a1f;
+    color: #fff;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* Layout Containers */
+#playable-area {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #0a0a1f;
+    z-index: 1000;
+    flex-shrink: 0;
+    touch-action: none;
+    box-sizing: border-box;
+    padding: 0;
+    overflow: hidden;
+    min-height: 60vh; /* Adjusted for smaller canvas */
+}
+
+#canvas-container {
+    position: relative;
+    width: 90%; /* Reduced to prevent overly large canvas */
+    max-width: 400px; /* Reduced for browser */
+    aspect-ratio: 3 / 3.6;
+    max-height: 60vh; /* Reduced to make canvas smaller */
+    background: #8B4513; /* Background color for the "ground" */
+    border: 2px solid #6B3A0A; /* Tiny sliver border */
+    border-radius: 8px 8px 30px 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.8), inset 0 0 8px rgba(0, 0, 0, 0.3);
+    margin: 5px auto;
+    overflow: hidden;
+    touch-action: none;
+}
+
+/* Canvas Styles */
+#game-canvas {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    display: block;
+    object-fit: contain;
+    image-rendering: pixelated;
+    transition: opacity 0.5s ease;
+}
+
+#game-canvas.low-health-blinking {
+    animation: low-health-blink 0.7s infinite;
+}
+
+@keyframes low-health-blink {
+    0% { background-color: rgba(255, 0, 0, 0.2); }
+    50% { background-color: rgba(255, 0, 0, 0.5); }
+    100% { background-color: rgba(255, 0, 0, 0.2); }
+}
+
+/* Score Display */
+#score {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(12px, 3vw, 16px);
+    color: #ffeb3b;
+    text-shadow: 0 0 5px #ffcc00, 0 0 10px #ffcc00;
+    background: rgba(10, 10, 31, 0.9);
+    padding: 6px 12px;
+    border: 2px solid #ffcc00;
+    border-radius: 5px;
+    margin: 5px 0;
+    z-index: 2;
+    width: fit-content;
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.6);
+    transition: transform 0.2s ease;
+}
+
+#score:hover {
+    transform: scale(1.02);
+}
+
+/* General Overlay Styles */
+#start-screen, #wedding, #game-over, #high-score-entry {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 95%;
+    max-width: 600px;
+    border: 3px solid #ffcc00;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 0 40px rgba(255, 204, 0, 0.8);
+    z-index: 10;
+    text-align: center;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+#start-screen:not(.hidden),
+#wedding:not(.hidden),
+#game-over:not(.hidden),
+#high-score-entry:not(.hidden) {
+    opacity: 1;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Neon Line Separator */
+.neon-line {
+    width: 80%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ffcc00, transparent);
+    margin: 10px auto;
+    box-shadow: 0 0 10px #ffcc00;
+    animation: neon-pulse 2s infinite;
+}
+
+@keyframes neon-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* Winner Text Container */
+.winner-text-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    background: rgba(10, 10, 31, 0.95);
+    padding: 15px;
+    border-radius: 10px;
+    z-index: 2;
+}
+
+/* Start Screen */
+#start-screen {
+    background: rgba(10, 10, 31, 0.95);
+}
+
+#start-screen h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(24px, 6vw, 28px);
+    color: #ffeb3b;
+    text-shadow: 0 0 5px #ffcc00, 0 0 10px #ffcc00;
+    margin: 8px 0;
+    animation: glow 1.5s infinite;
+}
+
+#start-screen .instructions {
+    font-family: 'Roboto', sans-serif;
+    font-size: clamp(12px, 3vw, 14px);
+    color: #fff;
+    text-shadow: 0 0 5px #ffeb3b;
+    margin: 8px 0;
+    line-height: 1.4;
+    background: rgba(10, 10, 31, 0.7);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/* Level-Up Screen (Wedding) */
+#wedding {
+    background: url('icons/level1.jpg') no-repeat center center / cover;
+    border: 3px solid #ffcc00;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 0 40px rgba(255, 204, 0, 0.8);
+    z-index: 10;
+    text-align: center;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#wedding .winner-text-container {
+    background: rgba(10, 10, 31, 0.95);
+    border-radius: 10px;
+    padding: 15px;
+    z-index: 2;
+    width: 90%;
+    max-width: 500px;
+}
+
+#wedding h1.level-up {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(24px, 6vw, 28px);
+    color: #ffeb3b;
+    text-shadow: 0 0 5px #ffcc00, 0 0 10px #ffcc00;
+    margin: 5px 0;
+    animation: glow 1.5s infinite;
+}
+
+#wedding p {
+    font-family: 'Roboto', sans-serif;
+    font-size: clamp(12px, 3vw, 14px);
+    color: #fff;
+    text-shadow: 0 0 5px #ffeb3b;
+    margin: 5px 0;
+    line-height: 1.4;
+}
+
+/* Bible Verse Container */
+#wedding .verse-container {
+    background: rgba(255, 204, 0, 0.15);
+    border: 2px solid #ffcc00;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px 0;
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.5);
+    width: 100%;
+    max-width: 450px;
+}
+
+#wedding p.bible-verse {
+    font-family: 'Roboto', sans-serif;
+    font-style: italic;
+    font-size: clamp(10px, 2.5vw, 12px);
+    color: #ffeb3b;
+    text-shadow: 0 0 5px #ffcc00;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Winner Buttons Container */
+.winner-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 15px;
+    z-index: 1;
+}
+
+/* Gold Bar Buttons for Start Over and Next Level */
+#start-over-btn, #next-level-btn {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(10px, 2vw, 12px);
+    font-weight: bold;
+    padding: 10px 20px;
+    background: linear-gradient(to bottom, #FFD700, #DAA520);
+    color: #000;
+    border: 3px solid #B8860B;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: uppercase;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 
+        0 5px 10px rgba(0, 0, 0, 0.5),
+        inset 0 2px 5px rgba(255, 255, 255, 0.5),
+        inset 0 -2px 5px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+}
+
+#start-over-btn:hover, #next-level-btn:hover {
+    background: linear-gradient(to bottom, #DAA520, #FFD700);
+    box-shadow: 
+        0 5px 15px rgba(0, 0, 0, 0.7),
+        inset 0 2px 5px rgba(255, 255, 255, 0.4),
+        inset 0 -2px 5px rgba(0, 0, 0, 0.4);
+    transform: scale(1.05);
+}
+
+#start-over-btn:active, #next-level-btn:active {
+    background: linear-gradient(to bottom, #DAA520, #FFD700);
+    box-shadow: 
+        0 2px 5px rgba(0, 0, 0, 0.3),
+        inset 0 1px 2px rgba(0, 0, 0, 0.2);
+    transform: translateY(3px);
+}
+
+/* Game Over Screen */
+#game-over {
+    background: rgba(10, 10, 31, 0.95);
+}
+
+#game-over h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(24px, 6vw, 28px);
+    color: #ff0000;
+    text-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000;
+    margin: 8px 0;
+    animation: glow-red 1.5s infinite;
+}
+
+@keyframes glow-red {
+    0%, 100% { text-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000; }
+    50% { text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000; }
+}
+
+/* High Score Entry Screen */
+#high-score-entry {
+    background: rgba(10, 10, 31, 0.95);
+}
+
+#high-score-entry h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(20px, 5vw, 24px);
+    color: #ffeb3b;
+    text-shadow: 0 0 5px #ffcc00;
+    margin: 8px 0;
+    animation: glow 1.5s infinite;
+}
+
+#high-score-entry h1.failure {
+    color: #ff0000;
+    text-shadow: 0 0 5px #ff0000;
+    animation: glow-red 1.5s infinite;
+}
+
+#high-score-entry p {
+    font-family: 'Roboto', sans-serif;
+    font-size: clamp(12px, 3vw, 14px);
+    color: #fff;
+    text-shadow: 0 0 5px #ffeb3b;
+    margin: 8px 0;
+}
+
+#high-score-entry p.failure {
+    color: #ff6666;
+    text-shadow: 0 0 5px #ff0000;
+}
+
+#high-score-input {
+    font-family: 'Roboto', sans-serif;
+    font-size: clamp(12px, 3vw, 14px);
+    padding: 6px;
+    margin: 8px 0;
+    border: 2px solid #ffcc00;
+    border-radius: 5px;
+    background: #141433;
+    color: #fff;
+    text-align: center;
+    width: 80%;
+    max-width: 200px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#high-score-input:focus {
+    outline: none;
+    border-color: #ffeb3b;
+    box-shadow: 0 0 10px #ffeb3b;
+}
+
+/* General Glow Buttons */
+.glow-btn {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(12px, 3vw, 14px);
+    padding: 8px 16px;
+    margin: 5px;
+    background: radial-gradient(circle at center, #ffcc00, #ffeb3b);
+    color: #0a0a1f;
+    border: 3px solid #ffcc00;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.8);
+}
+
+.glow-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(255, 204, 0, 1);
+}
+
+.glow-btn:active {
+    transform: scale(0.95);
+}
+
+/* Directional Controls (Gameboy D-pad) */
+#controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px auto; /* NEW: Add a top/bottom margin and auto center left/right */
+    z-index: 2;
+    width: 90%;
+    max-width: 400px;
+    background: #c0c0c0;
+    border: 5px solid #333;
+    border-radius: 10px;
+    padding: 10px; /* Reduced padding for tighter layout */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    flex-shrink: 0;
+}
+
+.directional-controls {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    background: #2a2a2a; /* Darker background like a GameBoy */
+    border-radius: 15px; /* Softer corners */
+    box-shadow: 
+        inset 3px 3px 8px rgba(0, 0, 0, 0.8),
+        inset -3px -3px 8px rgba(255, 255, 255, 0.1),
+        3px 3px 8px rgba(0, 0, 0, 0.5),
+        -3px -3px 8px rgba(255, 255, 255, 0.1);
+    border: 2px solid #444;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Remove the cross shape pseudo-elements */
+.directional-controls::before,
+.directional-controls::after {
+    content: none; /* Remove the cross shape */
+}
+
+.arrow-btn {
+    position: absolute;
+    width: 34px;
+    height: 34px;
+    font-size: 20px;
+    font-weight: bold;
+    background: transparent; /* Ensure no background */
+    color: #fff;
+    border: none; /* Remove border */
+    cursor: pointer;
+    transition: transform 0.1s ease, box-shadow 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+/* Position the buttons within the black square without overlap */
+#up-btn {
+    top: 5px; /* Move closer to the top edge */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#down-btn {
+    bottom: 5px; /* Move closer to the bottom edge */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#left-btn {
+    left: 5px; /* Move closer to the left edge */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#right-btn {
+    right: 5px; /* Move closer to the right edge */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Remove the center-dpad element as it's now unnecessary */
+#center-dpad {
+    display: none;
+}
+
+/* Hover and active states for feedback */
+.arrow-btn:hover {
+    transform: scale(1.1) translate(-50%, -50%);
+    color: #ffeb3b; /* Slight color change on hover */
+}
+
+.arrow-btn.active {
+    box-shadow: 0 0 20px rgba(0, 255, 153, 1), 0 0 40px rgba(0, 255, 153, 0.6);
+    color: #00ff99; /* Green tint on the arrow when active */
+}
+
+/* Throw Button */
+#throw-btn {
+    width: 70px;
+    height: 70px;
+    font-size: clamp(9px, 2vw, 11px);
+    background: radial-gradient(circle at center, #ff0000, #cc0000);
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255, 0, 0, 0.3), 0 5px 0 #900, 0 10px 10px rgba(0, 0, 0, 0.3);
+    margin-left: 60px;
+    transition: transform 0.1s ease, background 0.1s ease;
+}
+
+#throw-btn:hover {
+    transform: scale(1.05);
+}
+
+#throw-btn:active {
+    transform: scale(0.95) translateY(5px);
+    background: radial-gradient(circle at center, #666, #555);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255, 0, 0, 0.3), 0 2px 0 #900, 0 4px 5px rgba(0, 0, 0, 0.3);
+}
+
+#throw-btn:disabled {
+    background: radial-gradient(circle at center, #666, #555);
+    border-color: #666;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5), 0 2px 0 #666, 0 4px 5px rgba(0, 0, 0, 0.3);
+    cursor: not-allowed;
+}
+
+/* Desktop Instructions Box */
+#desktop-instructions-box {
+    display: none; /* Hidden by default, shown via JS */
+    position: absolute;
+    left: calc(50% + 200px); /* Position to the right of #controls (max-width 400px) */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 200px;
+    background: rgba(10, 10, 31, 0.9);
+    border: 2px solid #ffcc00;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+    z-index: 2;
+}
+
+#desktop-instructions-box:not(.hidden) {
+    display: block;
+}
+
+#desktop-instructions-box p {
+    font-family: 'Roboto', sans-serif;
+    font-size: clamp(12px, 2.5vw, 14px);
+    color: #fff;
+    text-shadow: 0 0 5px #ffeb3b;
+    margin: 0 0 10px 0;
+    line-height: 1.4;
+}
+
+#desktop-instructions-box .close-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    color: #ffeb3b;
+    cursor: pointer;
+    text-shadow: 0 0 5px #ffcc00;
+    transition: color 0.2s ease;
+}
+
+#desktop-instructions-box .close-btn:hover {
+    color: #ffcc00;
+}
+
+/* Mobile Styles for Screens up to 600px */
+@media (max-width: 600px) {
+    .hide-on-mobile {
+        display: none !important;
+    }
+
+    html, body {
+        overflow-y: auto;
+        height: auto;
+    }
+
+    #playable-area {
+        position: relative;
+        overflow: hidden;
+        padding-bottom: 0;
+        min-height: 50vh; /* Adjusted for mobile canvas */
+    }
+
+    #canvas-container {
+        max-width: 400px; /* Scaled from desktop */
+        width: 90%;
+        aspect-ratio: 3 / 3.6;
+        margin: 5px auto;
+        transform: scale(0.95);
+        transform-origin: top center;
+        background: #8B4513; /* Brown ground */
+        border: 2px solid #6B3A0A;
+        border-radius: 8px 8px 30px 8px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+        overflow: hidden; /* Prevents brown from exceeding green */
+    }
+
+    #game-canvas {
+        width: 100%;
+        height: 100%;
+        background: #228B22; /* Green canvas */
+        position: relative;
+        z-index: 1;
+        image-rendering: pixelated;
+    }
+
+    #scrollable-section {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        flex: none;
+        min-height: 200px;
+        padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+
+    #scrollable-section::-webkit-scrollbar {
+        display: none;
+    }
+
+    #mobile-controls-section {
+        display: flex !important;
+        justify-content: space-between; /* Joystick left, throw right */
+        align-items: center;
+        width: 90%;
+        max-width: 400px;
+        margin: 10px auto;
+        padding: 10px;
+        z-index: 2;
+        gap: 20px; /* Increased for spacing */
+        background: #c0c0c0;
+        border: 5px solid #333;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        padding-bottom: env(safe-area-inset-bottom, 10px);
+    }
+
+    #joystick-container {
+        width: 80px;
+        height: 80px;
+        background: radial-gradient(circle at center, rgba(0, 255, 153, 0.3), rgba(0, 255, 153, 0.1));
+        border: 2px solid #00ff99;
+        border-radius: 50%;
+        position: relative;
+        touch-action: none;
+        order: 1; /* Joystick on left */
+    }
+
+    #joystick {
+        width: 40px;
+        height: 40px;
+        background: radial-gradient(circle at center, #00ff99, #66ffcc);
+        border: 2px solid #00ff99;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 15px rgba(0, 255, 153, 0.8);
+        transition: transform 0.05s ease;
+    }
+
+    #joystick.active {
+        box-shadow: 0 0 25px rgba(0, 255, 153, 1);
+        background: radial-gradient(circle at center, #00ffcc, #33ff99);
+    }
+
+    #mobile-throw-btn {
+        width: 80px;
+        height: 80px;
+        font-family: 'Orbitron', sans-serif;
+        font-size: clamp(10px, 2vw, 12px);
+        padding: 5px;
+        background: radial-gradient(circle at center, #ff0000, #cc0000);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255, 0, 0, 0.3);
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: transform 0.1s ease, background 0.1s ease;
+        touch-action: manipulation;
+        order: 2; /* Throw on right */
+    }
+
+    #mobile-throw-btn:hover {
+        transform: scale(1.05);
+    }
+
+    #mobile-throw-btn:active {
+        transform: scale(0.95);
+        background: radial-gradient(circle at center, #666, #555);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255, 0, 0, 0.3);
+    }
+
+    #mobile-throw-btn:disabled {
+        background: radial-gradient(circle at center, #666, #555);
+        border-color: #666;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        cursor: not-allowed;
+    }
+
+    #instructions-container {
+        display: block !important;
+        width: 90%;
+        max-width: 400px;
+        margin: 10px auto;
+        text-align: center;
+    }
+
+    #control-instructions {
+        font-family: 'Roboto', sans-serif;
+        font-size: clamp(12px, 2.5vw, 14px);
+        color: #fff;
+        text-shadow: 0 0 5px #ffeb3b;
+        margin: 0;
+        background: rgba(10, 10, 31, 0.7);
+        padding: 5px;
+        border-radius: 5px;
+    }
+}
+
+/* Smaller Screens (e.g., iPhone 7, ~667px height) */
+@media (max-width: 400px) or (max-height: 667px) {
+    #canvas-container {
+        max-width: 320px;
+        transform: scale(0.9);
+    }
+
+    #mobile-controls-section {
+        max-width: 320px;
+        gap: 10px;
+        padding: 8px;
+        padding-bottom: calc(env(safe-area-inset-bottom, 10px) + 10px);
+    }
+
+    #joystick-container {
+        width: 60px;
+        height: 60px;
+    }
+
+    #joystick {
+        width: 30px;
+        height: 30px;
+    }
+
+    #mobile-throw-btn {
+        width: 60px;
+        height: 60px;
+        font-size: clamp(8px, 1.8vw, 10px);
+        padding: 3px;
+    }
+
+    #score {
+        font-size: clamp(10px, 2.5vw, 12px);
+    }
+
+    #instructions-container {
+        max-width: 320px;
+    }
+
+    #control-instructions {
+        font-size: clamp(10px, 2.5vw, 12px);
+        padding: 3px 6px;
+    }
+}
+
+/* Desktop Styles */
+@media (min-width: 601px) {
+    #scrollable-section {
+        max-height: 200px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #ffcc00 #0a0a1f;
+        margin-top: 5px;
+    }
+
+    #scrollable-section::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    #scrollable-section::-webkit-scrollbar-track {
+        background: #0a0a1f;
+    }
+
+    #scrollable-section::-webkit-scrollbar-thumb {
+        background: #ffcc00;
+        border-radius: 4px;
+    }
+
+    #playable-area {
+        min-height: 65vh;
+        padding-bottom: 0;
+        overflow-y: auto;
+    }
+
+    #canvas-container {
+        max-height: 65vh;
+        width: 90%;
+        max-width: 500px;
+    }
+
+    #mobile-controls-section,
+    #joystick-container {
+        display: none !important;
+    }
+
+    #controls {
+        display: flex !important;
+    }
+
+    .hide-on-mobile {
+        display: flex !important;
+    }
+}
+
+/* External Links */
+#external-links {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Reduced gap for tighter layout */
+    margin: 5px 0; /* Reduced margin for tighter layout */
+    flex-wrap: wrap;
+    width: 90%;
+    max-width: 400px; /* Match the width of #controls */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#external-links a {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(12px, 3vw, 14px);
+    color: #ffeb3b;
+    text-decoration: none;
+    padding: 6px 12px;
+    border: 2px solid #ffcc00;
+    border-radius: 5px;
+    background: rgba(10, 10, 31, 0.8);
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    width: 100px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#external-links a:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 204, 0, 0.8);
+}
+
+#external-links .glow-btn {
+    background: radial-gradient(circle at center, #ffcc00, #ffeb3b);
+    color: #0a0a1f;
+    border: 3px solid #ffcc00;
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.8);
+    width: 100px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* High Score Board (Wall of Champions) */
+#high-score-board {
+    width: 90%;
+    max-width: 400px;
+    margin: 5px auto; /* Reduced margin for tighter layout */
+    padding: 8px; /* Reduced padding for tighter layout */
+    background: rgba(10, 10, 31, 0.8);
+    border: 2px solid #ffcc00;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+}
+
+#high-score-board h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(16px, 3.5vw, 18px);
+    color: #ffeb3b;
+    text-shadow: 0 0 5px #ffcc00;
+    margin: 5px 0;
+    animation: glow 1.5s infinite;
+}
+
+#high-score-list {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+}
+
+#high-score-list li {
+    font-family: 'Roboto', sans-serif;
+    font-size: clamp(10px, 2.5vw, 12px);
+    color: #fff;
+    text-shadow: 0 0 5px #ffeb3b;
+    margin: 4px 0;
+    line-height: 1.4;
+    padding: 2px 5px;
+    border-radius: 3px;
+    transition: background 0.3s ease;
+}
+
+#high-score-list li:hover {
+    background: rgba(255, 204, 0, 0.1);
+}
+
+/* Accessibility and Focus Styles */
+button:focus, input:focus, a:focus {
+    outline: 2px solid #ffeb3b;
+    outline-offset: 2px;
+}
+
+/* Remove focus outline for D-pad and throw buttons */
+#left-btn:focus, #right-btn:focus, #up-btn:focus, #down-btn:focus,
+#throw-btn:focus, #mobile-throw-btn:focus {
+    outline: none;
+}
+
+/* Prevent unwanted touch behaviors */
+button, a, input {
+    touch-action: manipulation;
+}
+
+/* Glow Animation for Text */
+@keyframes glow {
+    0%, 100% { text-shadow: 0 0 5px #ffcc00, 0 0 10px #ffcc00; }
+    50% { text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00; }
+}
+
+/* --- META QUEST 2 & LARGE SCREEN OPTIMIZATIONS --- */
+/* This media query targets VR headsets and large desktop monitors, overriding previous desktop styles. */
+/* It increases the size of all elements for better readability and easier pointer interaction. */
+@media (min-width: 1200px) {
+
+    body, html {
+        justify-content: center; /* Better vertical centering for the whole view */
+    }
+
+    #playable-area {
+        gap: 10px; /* Add a bit of space between elements */
+    }
+    
+    /* Make the game canvas larger */
+    #canvas-container {
+        max-width: 600px;
+        max-height: 75vh;
+        margin-bottom: 10px;
+    }
+
+    /* Enlarge the score text */
+    #score {
+        font-size: clamp(18px, 2vw, 22px);
+        padding: 8px 16px;
+    }
+
+    /* Make controls larger and easier to target with a VR pointer */
+    #controls {
+        max-width: 600px; /* Match the new canvas width */
+        padding: 20px;
+        margin-top: 15px;
+        gap: 40px; /* Add more space between d-pad and throw button */
+    }
+
+    .directional-controls {
+        width: 150px; /* Increase D-pad size */
+        height: 150px;
+    }
+
+    .arrow-btn {
+        width: 48px; /* Increase arrow button size */
+        height: 48px;
+        font-size: 28px; /* Make arrow icon larger */
+    }
+    
+    #throw-btn {
+        width: 100px; /* Increase throw button size */
+        height: 100px;
+        font-size: 16px;
+        margin-left: 0; /* Remove fixed margin, rely on flex gap */
+    }
+
+    /* Enlarge other UI elements to match */
+    #high-score-board, #external-links {
+        max-width: 600px; /* Match the new canvas width */
+        margin-top: 15px;
+    }
+
+    #high-score-board {
+        padding: 15px;
+    }
+
+    #high-score-board h2 {
+        font-size: clamp(20px, 2.5vw, 24px);
+    }
+    
+    #high-score-list li {
+        font-size: clamp(14px, 2vw, 16px);
+        padding: 4px 8px;
+    }
+
+    #external-links {
+        gap: 20px;
+    }
+    
+    #external-links a {
+        font-size: clamp(14px, 2vw, 16px);
+        width: 140px;
+        height: 45px;
+    }
+
+    /* Make overlay screens larger */
+    #start-screen, #wedding, #game-over, #high-score-entry {
+        max-width: 750px;
+        padding: 30px;
+    }
+
+    #start-screen h1, #wedding h1.level-up, #game-over h1 {
+        font-size: clamp(32px, 5vw, 40px);
+    }
+
+    #start-screen .instructions, #wedding p {
+        font-size: clamp(16px, 2.5vw, 18px);
+    }
+}

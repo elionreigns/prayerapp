@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <!-- SEO Metadata -->
+    <title>David vs. Giants: The Successors | Prayer Authority</title>
+    <meta name="description" content="Play David vs. Giants: The Successors! Level 1: Face Ishbi-benob with low health and get help from Abishai. Level 2: Battle 4 spear-throwing giants! A new challenge at Prayer Authority!">
+    <meta name="keywords" content="David vs Giants game, Ishbi-benob, Abishai, biblical games, Christian games, Prayer Authority, futuristic games, 4 giants game">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Prayer Authority">
+    <link rel="canonical" href="https://prayerauthority.com/prayers/games/davidvsgoliath/level2/index.html">
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="David vs. Giants: The Successors | Prayer Authority">
+    <meta property="og:description" content="Level 1: David vs. Ishbi-benob. Level 2: David vs. 4 Giants. A new biblical battle game awaits! Play now at Prayer Authority!">
+    <meta property="og:image" content="https://prayerauthority.com/prayers/games/davidvsgoliath/icons/david-icon.png"> <!-- Adjust if you have a new main image -->
+    <meta property="og:url" content="https://prayerauthority.com/prayers/games/davidvsgoliath/level2/index.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Prayer Authority">
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="David vs. Giants: The Successors | Prayer Authority">
+    <meta name="twitter:description" content="Level 1: David vs. Ishbi-benob. Level 2: David vs. 4 Giants. A new biblical battle game awaits! Play now at Prayer Authority!">
+    <meta name="twitter:image" content="https://prayerauthority.com/prayers/games/davidvsgoliath/icons/david-icon.png"> <!-- Adjust if you have a new main image -->
+    <meta name="twitter:site" content="@PrayerAuthority">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../icons/david-icon.png"> <!-- Path updated -->
+
+    <!-- Preload Resources -->
+    <link rel="preload" href="style.css" as="style">
+    <link rel="preload" href="game.js" as="script">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" as="style">
+    <link rel="preload" href="../icons/dg-music.mp3" as="audio"> <!-- Path updated -->
+
+    <!-- DNS Prefetch -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://www.soundhelix.com">
+    <link rel="dns-prefetch" href="https://www.soundjay.com">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="game-container">
+        <div id="start-screen">
+            <h1 class="animated-title">David vs Giants:<br>The Successors</h1>
+            <div class="neon-line"></div>
+            <p class="instructions">
+                Prepare for new battles!<br>
+                <br>
+                **Level 1: Ishbi-benob**<br>
+                David is weak! Hit the giant Ishbi-benob. When he's nearly defeated, grab the flashing power-up! Abishai will deliver the final blow!<br>
+                <br>
+                **Level 2: The Four Giants**<br>
+                Face four giants! Dodge their spears and strike them down with your sword!<br>
+                <br>
+                Controls: Use ←, →, ↑, ↓ (or joystick) to move. Space or Throw Button to attack with your sword.
+            </p>
+            <button id="start-btn" class="glow-btn">Start Battle</button>
+        </div>
+        <div id="score" class="hidden">Level 1 | David: 1% | Ishbi-benob: 10/10</div> <!-- Initial score display -->
+        <div id="canvas-container">
+            <canvas id="game-canvas" class="hidden"></canvas>
+        </div>
+        <!-- Desktop Controls -->
+        <div id="controls" class="hidden">
+            <div class="movement-controls">
+                <button id="left-btn" class="control-btn">Left</button>
+                <button id="up-btn" class="control-btn">Up</button>
+                <button id="right-btn" class="control-btn">Right</button>
+                <button id="down-btn" class="control-btn">Down</button>
+                <button id="throw-btn" class="control-btn throw-btn">Throw Sword</button>
+            </div>
+        </div>
+        <!-- Mobile Controls Container (populated by JS/CSS) -->
+        <!-- Instructions Container (populated by JS/CSS) -->
+        <div id="control-instructions" class="hidden">
+             <p>Arrows/Joystick: Move | Space/Button: Throw Sword</p>
+             <p>Lvl 1: Grab Power-Up! | Lvl 2: Defeat all 4 Giants!</p>
+        </div>
+
+        <!-- Renamed from #wedding to #level-complete-screen -->
+        <div id="level-complete-screen" class="hidden">
+            <!-- Level 1 Complete Screen -->
+            <div id="level1-complete" class="winner-text-container hidden">
+                <h1 class="level-up">Level 1 Complete!</h1>
+                <p>Ishbi-benob thought he had you, but Abishai came to your aid!</p>
+                <p class="bible-verse">"But Abishai son of Zeruiah came to David’s rescue; he struck the Philistine down and killed him. Then David’s men swore to him, saying, 'Never again will you go out with us to battle, so that the lamp of Israel will not be extinguished.'"</p>
+                <p>— 2 Samuel 21:17</p>
+            </div>
+
+            <!-- Level 2 Complete Screen -->
+            <div id="level2-complete" class="winner-text-container hidden">
+                <h1 class="level-up">Level 2 Complete! Victory!</h1>
+                <p>You faced down the four successors of the giants and prevailed!</p>
+                 <p class="bible-verse">"These four were descendants of Rapha in Gath, and they fell at the hands of David and his men."</p>
+                <p>— 2 Samuel 21:22</p>
+                <p>Congratulations, you have completed the battles!</p>
+            </div>
+
+            <!-- Shared Buttons -->
+            <div class="button-container">
+                <button id="start-over-btn" class="glow-btn">Play Again (Lvl 1)</button>
+                <button id="next-level-btn" class="glow-btn">Next Level</button> <!-- Text will change via JS -->
+            </div>
+            <!-- Shared Audio -->
+            <audio id="level-complete-music" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" preload="auto"></audio> <!-- Renamed audio element -->
+        </div>
+
+        <div id="game-over" class="hidden">
+            <h1>Battle Lost!</h1>
+            <p>The giants were too strong this time!</p>
+            <button id="restart-btn" class="glow-btn">Try Again</button> <!-- Renamed from play-again-btn -->
+            <audio id="game-over-sound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3" preload="auto"></audio>
+        </div>
+
+        <!-- Audio Elements with Updated Paths -->
+        <audio id="background-music" loop src="../icons/dg-music.mp3" preload="auto"></audio>
+        <audio id="throw-sword-sound" src="../icons/throw-stone.mp3" preload="auto"></audio> <!-- Reusing stone sound for sword -->
+        <audio id="hit-giant-sound" src="../icons/goliath-hit.mp3" preload="auto"></audio> <!-- Renamed -->
+        <audio id="hit-david-sound" src="../icons/david-hit.mp3" preload="auto"></audio>
+        <audio id="power-up-appear-sound" src="../icons/powerup-spawn.mp3" preload="auto"></audio> <!-- Add a sound? -->
+        <audio id="power-up-collect-sound" src="../icons/powerup-collect.mp3" preload="auto"></audio> <!-- Add a sound? -->
+        <audio id="final-blow-sound" src="../icons/final-blow.mp3" preload="auto"></audio> <!-- Add a sound? -->
+
+    </div>
+    <a href="https://www.prayerauthority.com" class="back-link">
+        <button class="glow-btn back-btn">Return to Prayer Authority</button>
+    </a>
+    <script src="game.js"></script>
+</body>
+</html>

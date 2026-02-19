@@ -1,0 +1,28 @@
+{
+  "name": "power-prayer",
+  "version": "1.0.0",
+  "description": "Power Prayer — Prayers, chatbots, Spiritual Gifts, P48X, and more. Account synced with Prayer Authority website.",
+  "scripts": {
+    "build": "echo 'No build step; www is the app UI.'",
+    "preview": "npx serve www -l 3336",
+    "preview:open": "npx serve www -l 3336 -o",
+    "cap:sync": "npx cap sync",
+    "cap:sync:ios": "npx cap sync ios",
+    "cap:update:ios": "npx cap update ios",
+    "cap:ios": "npx cap open ios",
+    "ios:ready": "npm run cap:sync:ios && npm run cap:update:ios"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/ios": "^6.0.0",
+    "serve": "^14.2.4"
+  },
+  "private": true,
+  "capacitor": {
+    "ios": {
+      "minVersion": "14.0"
+    }
+  }
+}

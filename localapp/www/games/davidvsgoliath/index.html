@@ -1,0 +1,213 @@
+      
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Play David's Triumph: Face Goliath in an epic battle of skill and faith. Throw stones, dodge spears, and claim victory in this retro-style game inspired by biblical courage.">
+    <meta name="keywords" content="David vs Goliath, Bible game, retro game, faith-based game, Christian game, Prayer Authority">
+    <meta name="author" content="Prayer Authority">
+    <title>David's Triumph - Face Goliath!</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:ital@0;1&display=swap" rel="stylesheet">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a2a">
+    <!-- Add this line to reference the favicon in the icons folder -->
+    <link rel="icon" type="image/x-icon" href="icons/favicon.ico">
+    <style>
+        button:disabled {
+            background-color: #666 !important;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        #main-wrapper {
+            overflow: auto; /* Changed from hidden to auto to allow scrolling */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        #playable-area {
+            overflow: hidden;
+            flex: 0 0 auto;
+            width: 100%;
+            padding: 0 1px;
+            box-sizing: border-box;
+        }
+        #game-canvas {
+            /* Background will be drawn in game.js */
+        }
+    </style>
+</head>
+<body>
+    <div id="main-wrapper">
+        <div id="playable-area">
+            <div id="score">Level: 1 | David: 10/10 | Goliath: 1/1</div>
+                  
+<div id="canvas-container">
+    <canvas id="game-canvas"></canvas>
+    <div id="start-screen" class="hidden">
+                    <div class="winner-text-container">
+                        <h1>David's Triumph</h1>
+                        <div class="neon-line"></div>
+                        <p class="instructions">Guide David to defeat Goliath across 20 levels.<br>Use the joystick or WASD/arrow keys to move, and the Throw button or Space to launch stones.</p>
+                        <button id="start-btn" class="glow-btn">Activate Battle</button>
+                    </div>
+                </div>
+                <div id="wedding" class="hidden">
+                    <div class="winner-text-container">
+                        <h1 class="level-up">Level 1 Complete!</h1>
+                        <div class="neon-line"></div>
+                        <img id="level-image" class="level-image hidden" src="" alt="Level Completion Image">
+                        <div id="wedding-level-1">
+                            <p>With a single stone, David struck Goliath, proving that faith and courage can topple even the mightiest foes. A new challenge awaits!</p>
+                            <p class="bible-verse">"All those gathered here will know that the Lord saves not with sword and spear, for the battle is the Lord’s, and He will give you into our hands." <br>— 1 Samuel 17:47 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-2" class="hidden">
+                            <p>David gathers mighty men, including those with faces of lions, building a loyal band of warriors to stand by his side. Onward to greater trials!</p>
+                            <p class="bible-verse">"Courageous men from the Gadites came over to David in the stronghold in the wilderness, men trained for war, who could handle shield and spear, whose faces were like the faces of lions, and who were swift as gazelles on the mountains." <br>— 1 Chronicles 12:8 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-3" class="hidden">
+                            <p>David becomes a leader to the distraught and outcasts, offering hope to those in despair as they rally under his command. Prepare for the next challenge!</p>
+                            <p class="bible-verse">"David departed from there and escaped to the cave of Adullam; and when his brothers and all his father’s house heard it, they went down there to him." <br>— 1 Samuel 22:1 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-4" class="hidden">
+                            <p>David spares Saul’s life in the cave, showing mercy and trust in God’s timing for his destiny. The path ahead grows more demanding!</p>
+                            <p class="bible-verse">"The Lord forbid that I should do this thing to my master, the Lord’s anointed, to put my hand against him, since he is the anointed of the Lord." <br>— 1 Samuel 24:6 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-5" class="hidden">
+                            <p>David inquires of the Lord and recovers all that the Amalekites stole, restoring hope to his people through faith. The next challenge looms larger!</p>
+                            <p class="bible-verse">"And David inquired of the Lord, saying, ‘Shall I pursue this band [of raiders]? Will I overtake them?’ And He answered him, ‘Pursue, for you will certainly overtake them, and you will certainly rescue [your people].’" <br>— 1 Samuel 30:8 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-6" class="hidden">
+                            <p>David receives divine insight to march around the balsam trees, outmaneuvering the Philistines with God’s strategy. Brace for the trials ahead!</p>
+                            <p class="bible-verse">"When you hear the sound of marching in the tops of the balsam trees, then you shall pay attention and act promptly, for at that time the Lord will have gone out before you to strike the army of the Philistines." <br>— 2 Samuel 5:24 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-7" class="hidden">
+                            <p>David brings the Ark of the Covenant to Jerusalem, celebrating God’s presence with joy and worship. On to the next victory!</p>
+                            <p class="bible-verse">"So David and all the house of Israel were bringing up the ark of the Lord with shouting and with the sound of the trumpet." <br>— 2 Samuel 6:15 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-8" class="hidden">
+                            <p>David defeats the Philistines, breaking through their lines like a flood, and solidifies his reign. Prepare for the next triumph!</p>
+                            <p class="bible-verse">"So David came to Baal-perazim, and he defeated them there, and said, 'The Lord has broken through my enemies before me, like the breakthrough of waters.'" <br>— 2 Samuel 5:20 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-9" class="hidden">
+                            <p>David shows kindness to Mephibosheth, honoring his covenant with Jonathan by restoring his land and providing for him. Onward to new battles!</p>
+                            <p class="bible-verse">"And David said, ‘Is there yet anyone left of the house of Saul, that I may show him kindness for Jonathan’s sake?’" <br>— 2 Samuel 9:1 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-10" class="hidden">
+                            <p>David defeats the Ammonites and Syrians, expanding his kingdom through strategic alliances and God’s favor. The challenges intensify!</p>
+                            <p class="bible-verse">"So David made a name for himself when he returned from killing 18,000 Arameans (Syrians) in the Valley of Salt." <br>— 2 Samuel 8:13 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-11" class="hidden">
+                            <p>David repents after his sin with Bathsheba, seeking God’s mercy and restoration. The path to righteousness continues!</p>
+                            <p class="bible-verse">"Create in me a clean heart, O God, and renew a right and steadfast spirit within me." <br>— Psalm 51:10 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-12" class="hidden">
+                            <p>David faces Absalom’s rebellion but trusts in God’s protection, fleeing with his loyal followers. A greater test awaits!</p>
+                            <p class="bible-verse">"David said to all his servants who were with him at Jerusalem, ‘Arise, let us flee, or else none of us will escape from Absalom!'" <br>— 2 Samuel 15:14 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-13" class="hidden">
+                            <p>David’s loyal friend Hushai provides critical counsel, thwarting Absalom’s plans and preserving David’s throne. On to the next victory!</p>
+                            <p class="bible-verse">"Hushai said to Absalom, ‘The advice that Ahithophel has given is not good at this time.’" <br>— 2 Samuel 17:7 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-14" class="hidden">
+                            <p>David mourns Absalom’s death but returns to Jerusalem, restoring unity to the kingdom through forgiveness. The journey continues!</p>
+                            <p class="bible-verse">"And the king was deeply moved and went up to the chamber over the gate and wept. And as he went, he said, ‘O my son Absalom, my son, my son Absalom! Would that I had died instead of you!’" <br>— 2 Samuel 18:33 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-15" class="hidden">
+                            <p>David defeats Sheba’s rebellion, uniting the tribes of Israel under his reign with wisdom and strength. Prepare for the next challenge!</p>
+                            <p class="bible-verse">"And there happened to be there a man of Belial, whose name was Sheba, the son of Bichri, a Benjamite: and he blew a trumpet, and said, We have no part in David, neither have we inheritance in the son of Jesse: every man to his tents, O Israel." <br>— 2 Samuel 20:1 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-16" class="hidden">
+                            <p>David avenges the Gibeonites, bringing justice to the land and honoring God’s covenant. The trials grow ever tougher!</p>
+                            <p class="bible-verse">"The king said, ‘What do you want me to do for you?’ And they said to the king, ‘The man who consumed us and planned to exterminate us from remaining in any territory of Israel...’" <br>— 2 Samuel 21:4 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-17" class="hidden">
+                            <p>David and his mighty men slay four giants, proving that no enemy is too great with God on their side. Onward to glory!</p>
+                            <p class="bible-verse">"These four were born to the giant in Gath, and they fell by the hand of David and by the hand of his servants." <br>— 2 Samuel 21:22 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-18" class="hidden">
+                            <p>David sings a song of praise, thanking God for delivering him from all his enemies. The final battles approach!</p>
+                            <p class="bible-verse">"The Lord is my rock, my fortress, and my deliverer; my God, my rock, in whom I take refuge; my shield and the horn of my salvation, my stronghold." <br>— 2 Samuel 22:2-3 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-19" class="hidden">
+                            <p>David’s mighty men are celebrated for their heroic deeds, a testament to the strength God provides. One final challenge remains!</p>
+                            <p class="bible-verse">"These are the names of the mighty men (warriors) whom David had: Josheb-basshebeth, a Tahchemonite, chief of the captains, also called Adino the Eznite, because of the eight hundred men killed [by him] at one time." <br>— 2 Samuel 23:8 (AMP)</p>
+                        </div>
+                        <div id="wedding-level-20" class="hidden">
+                            <p>David prepares for the temple, gathering materials and entrusting Solomon with God’s vision. A legacy of faith endures!</p>
+                            <p class="bible-verse">"David said, ‘Solomon my son is young and inexperienced, and the house that is to be built for the Lord must be exceedingly magnificent, famous, and glorious throughout all lands. Therefore I will now make preparations for it.’ So David made ample preparations before his death." <br>— 1 Chronicles 22:5 (AMP)</p>
+                        </div>
+                        <div class="winner-buttons">
+                            <button id="start-over-btn" class="hidden">Start Over</button>
+                            <button id="next-level-btn" class="hidden">Next Level</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="game-over" class="hidden">
+                    <div class="winner-text-container">
+                        <h1>Game Over!</h1>
+                        <div class="neon-line"></div>
+                        <p id="game-over-message">You Fought Valiantly!</p>
+                        <button id="restart-btn" class="glow-btn hidden">Restart</button>
+                        <button id="play-again-btn" class="glow-btn hidden">Play Again</button>
+                        <button id="start-over-btn" class="glow-btn hidden">Start Over</button> <!-- This button appears multiple times, ensure JS targets correctly or use more specific IDs if needed -->
+                    </div>
+                </div>
+                <div id="high-score-entry" class="hidden">
+                    <div class="winner-text-container">
+                        <h1 id="high-score-title">New High Score!</h1>
+                        <div class="neon-line"></div>
+                        <p id="high-score-message">Level 1, Goliath: 0</p>
+                        <input type="text" id="high-score-input" maxlength="20" placeholder="Enter your name">
+                        <button id="high-score-submit-btn" class="glow-btn">Submit</button>
+                        <button id="high-score-cancel-btn" class="glow-btn">Cancel</button>
+                    </div>
+                </div>
+            </div> <!-- End of canvas-container -->
+        </div> <!-- End of playable-area -->
+
+        <!-- Moved elements: instructions-container, controls, mobile-controls-section -->
+        <div id="instructions-container" class="hidden"> <!-- Added class="hidden" for initial JS control -->
+            <p id="control-instructions" class="hidden">Use joystick to move, button to throw stones</p> <!-- Ensured inner p also hidden initially -->
+        </div>
+
+        <div id="controls" class="hide-on-mobile">
+            <div class="directional-controls">
+                <button id="up-btn" class="arrow-btn">↑</button>
+                <button id="left-btn" class="arrow-btn">←</button>
+                <button id="right-btn" class="arrow-btn">→</button>
+                <button id="down-btn" class="arrow-btn">↓</button>
+            </div>
+            <button id="throw-btn">THROW</button>
+        </div>
+
+        <div id="mobile-controls-section" class="hidden">
+            <div id="joystick-container">
+                <div id="joystick"></div>
+            </div>
+            <button id="mobile-throw-btn">THROW</button>
+        </div>
+        <!-- End of moved elements -->
+
+        <div id="scrollable-section">
+            <div id="external-links">
+                <a id="prayer-authority-btn" href="https://www.PrayerAuthority.com">PRAY</a>
+                <a id="fight-more-giants-btn" href="https://prayerauthority.com/prayers/games/davidvsgoliath/level2/index.html">SEQUEL</a>
+            </div>
+            <div id="high-score-board">
+                <h2>Wall of Champions</h2>
+                <div class="neon-line"></div>
+                <ul id="high-score-list"></ul>
+            </div>
+        </div>
+    </div> <!-- End of main-wrapper -->
+
+    <audio id="background-music" src="icons/dg-music.mp3"></audio>
+    <audio id="throw-stone-sound" src="icons/throw-stone.mp3"></audio>
+    <audio id="hit-goliath-sound" src="icons/goliath-hit.mp3"></audio>
+    <audio id="hit-david-sound" src="icons/david-hit.mp3"></audio>
+    <script src="game.js"></script>
+</body>
+</html>

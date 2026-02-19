@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>Power Prayer</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect fill='%230d1b2a' width='32' height='32'/><text x='16' y='22' font-size='18' fill='%23ffd700' text-anchor='middle' font-family='sans-serif'>P</text></svg>" />
+  <link rel="stylesheet" href="css/shell.css" />
+</head>
+<body>
+  <header class="app-header">
+    <button type="button" class="menu-btn" aria-label="Open app menu">☰</button>
+    <div class="header-center">
+      <h1><span>Power</span> Prayer</h1>
+      <p class="app-nav-label">Application  ☰  Navigation</p>
+    </div>
+  </header>
+  <main class="app-content">
+    <div id="preview-banner" class="preview-banner" style="display:none;">
+      <span>Preview mode (localhost).</span>
+      <a id="open-current-tab" href="#" target="_blank" rel="noopener">Open current page in new tab</a>
+    </div>
+    <div id="loading-spinner" class="loading-spinner" style="display:none;"></div>
+    <div id="welcome-panel" class="welcome-panel" style="display:none;">
+      <h3>Welcome</h3>
+      <p>Open the menu to sign in or use a prayer or tool.</p>
+    </div>
+    <div id="iframe-wrap" class="iframe-wrap" style="display:none;">
+      <iframe id="content-frame" title="Content"></iframe>
+    </div>
+    <div id="native-redletters" class="native-view" aria-label="Red Letters"></div>
+    <div id="native-dreams" class="native-view" aria-label="Dream Interpreter"></div>
+    <div id="native-counsel" class="native-view" aria-label="Biblical Counsel"></div>
+    <div id="native-urim" class="native-view" aria-label="Urim & Thummim"></div>
+    <div id="native-p48x" class="native-view" aria-label="P48X Reflections"></div>
+    <div id="native-translator" class="native-view" aria-label="Spousal Translator"></div>
+    <div id="native-david" class="native-view native-view-iframe" aria-label="David vs Goliath">
+      <iframe id="david-frame" title="David vs Goliath"></iframe>
+    </div>
+    <div id="native-biblemap" class="native-view native-view-iframe" aria-label="Bible Map">
+      <iframe id="biblemap-frame" title="Bible Map"></iframe>
+    </div>
+  </main>
+  <div class="drawer-overlay" aria-hidden="true"></div>
+  <aside class="drawer" aria-label="Menu">
+    <div class="drawer-header">
+      <h2>Power Prayer</h2>
+      <p>Log in to sync with your website account.</p>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-title">Account</div>
+      <a href="#" class="drawer-link highlight" data-path="/prayers/login.php">Login</a>
+      <a href="#" class="drawer-link" data-path="/prayers/register.php">Register</a>
+      <a href="#" class="drawer-link" data-path="/prayers/dashboard.php">Dashboard</a>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-title">Prayers</div>
+      <a href="#" class="drawer-link" data-path="/prayers/index.php">Prayers Home</a>
+      <a href="#" class="drawer-link" data-path="/prayers/ask.php">Ask Journal</a>
+      <a href="#" class="drawer-link" data-path="/prayers/altar.php">Altar</a>
+      <a href="#" class="drawer-link" data-path="/prayers/healing.php">Healing Prayer</a>
+      <a href="#" class="drawer-link" data-path="/prayers/salvation.php">Salvation</a>
+      <a href="#" class="drawer-link" data-path="/prayers/jehoshaphat.php">Jehoshaphat</a>
+      <a href="#" class="drawer-link" data-path="/prayers/bank.php">Bank</a>
+      <a href="#" class="drawer-link" data-path="/prayers/requests.php">Requests</a>
+      <a href="#" class="drawer-link" data-path="/prayers/prayed.php">Prayed</a>
+      <a href="#" class="drawer-link" data-path="/prayers/forgive.php">Forgive</a>
+      <a href="#" class="drawer-link" data-path="/prayers/redletters.php">Red Letters</a>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-title">Tools & Chatbots</div>
+      <a href="#" class="drawer-link" data-path="/prayers/dreams.php">Dream Interpreter</a>
+      <a href="#" class="drawer-link" data-path="/counsel/">Biblical Counsel</a>
+      <a href="#" class="drawer-link" data-path="/prayers/urim2.php">Urim & Thummim</a>
+      <a href="#" class="drawer-link" data-path="/prayers/spiritual_gifts_test.php">Spiritual Gifts Test</a>
+      <a href="#" class="drawer-link" data-path="/translator/">Spousal Translator</a>
+      <a href="#" class="drawer-link" data-path="/prayers/p48x.php">P48X Reflections</a>
+      <a href="#" class="drawer-link" data-path="/vitamins/">Vitamins</a>
+      <a href="#" class="drawer-link" data-path="/battlesword/">Battle Sword</a>
+      <a href="#" class="drawer-link" data-path="/prayers/games/davidvsgoliath/">David vs Goliath</a>
+      <a href="#" class="drawer-link" data-path="/prayers/map/">Bible Map</a>
+    </div>
+  </aside>
+  <script src="js/config.js"></script>
+  <script src="js/config-loader.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

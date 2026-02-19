@@ -1,0 +1,10 @@
+{
+  "appId": "com.prayerauthority.powerprayer",
+  "appName": "Power Prayer",
+  "webDir": "www",
+  "server": {},
+  "ios": {
+    "allowsLinkPreview": false,
+    "contentInset": "automatic"
+  }
+}

@@ -1,0 +1,528 @@
+/* styles.css */
+body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0a0a1f, #1a2a3f); /* Dark cosmic gradient */
+    font-family: 'Orbitron', sans-serif; /* Futuristic font */
+    overflow: auto;
+    padding: 10px;
+    box-sizing: border-box;
+    touch-action: manipulation; /* Prevent default touch behaviors like pinch-to-zoom */
+}
+
+#game-container {
+    position: relative;
+    width: 600px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(10, 10, 31, 0.9); /* Dark metallic */
+    border-radius: 15px;
+    padding: 10px;
+    box-shadow: 0 0 50px rgba(0, 255, 153, 0.8); /* Neon green glow */
+    border: 2px solid #00ff99; /* Neon green border */
+}
+
+#score {
+    text-align: center;
+    font-size: clamp(18px, 4vw, 24px);
+    margin: 10px 0;
+    color: #00ff99; /* Neon green */
+    text-shadow: 0 0 10px #00ff99, 0 0 20px #ff00cc; /* Green and purple glow */
+    background: rgba(10, 10, 31, 0.8);
+    padding: 8px 10px;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 2px solid #00ff99;
+    box-shadow: 0 0 20px rgba(0, 255, 153, 0.6);
+}
+
+#canvas-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4; /* Maintain a 3:4 aspect ratio (600:800) */
+    max-height: 65vh; /* Adjusted for potential vertical space need */
+    border: 5px solid #00ff99; /* Neon green */
+    border-radius: 10px;
+    background: #0a0a1f; /* Matches canvas */
+    box-shadow: 0 0 40px rgba(0, 255, 153, 0.7);
+    overflow: hidden;
+}
+
+
+#game-canvas {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    display: block; /* Ensure canvas is visible */
+}
+
+#controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    z-index: 2;
+    width: 100%;
+    position: relative;
+}
+
+#mobile-controls-section {
+    display: none; /* Hidden by default, shown on mobile */
+    width: 100%;
+    padding: 5px;
+    background: rgba(10, 10, 31, 0.8); /* Dark metallic background */
+    border-top: 2px solid #00ff99; /* Neon green border to separate from canvas */
+    border-radius: 0 0 10px 10px; /* Rounded bottom corners */
+    box-shadow: 0 -5px 20px rgba(0, 255, 153, 0.5); /* Neon green glow */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0; /* Remove any margin to ensure no gap */
+}
+
+#instructions-container {
+    display: none; /* Hidden by default, shown on mobile */
+    width: 100%;
+    padding: 5px;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.movement-controls {
+    display: grid;
+    grid-template-areas:
+        ". up throw"
+        "left down right";
+    gap: 8px;
+    justify-items: center;
+    align-items: center;
+    padding: 10px;
+    background: rgba(10, 10, 31, 0.5); /* Semi-transparent metallic */
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 255, 153, 0.4);
+    border: 1px solid #ff00cc; /* Purple accent */
+}
+
+#left-btn { grid-area: left; }
+#up-btn { grid-area: up; }
+#right-btn { grid-area: right; }
+#down-btn { grid-area: down; }
+#throw-btn { grid-area: throw; } /* This targets the desktop throw button */
+
+.control-btn {
+    padding: 10px;
+    font-size: clamp(12px, 2.5vw, 14px);
+    cursor: pointer;
+    background: linear-gradient(45deg, #ff00cc, #00ff99); /* Purple to green */
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    transition: transform 0.1s, box-shadow 0.3s;
+    text-shadow: 0 0 5px #fff;
+    width: 80px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    white-space: normal;
+    line-height: 1.2;
+    box-shadow: 0 0 15px rgba(0, 255, 153, 0.6);
+    position: relative;
+    z-index: 5; /* Ensure buttons are above other elements */
+    touch-action: manipulation; /* Prevent default touch behaviors */
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+}
+
+.control-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px #ff00cc;
+}
+
+.control-btn:active {
+    transform: scale(0.95);
+}
+
+/* Style specifically for the throw button if needed, e.g., if ID changes */
+.throw-btn {
+    /* Optional: Add specific styles for throw buttons */
+    background: linear-gradient(45deg, #ff33cc, #00e68a); /* Slightly different gradient? */
+}
+
+
+#control-instructions {
+    margin-top: 5px; /* Adjust spacing */
+    text-align: center;
+    color: #00ccff; /* Cyan text */
+    font-size: clamp(12px, 2.5vw, 14px);
+    text-shadow: 0 0 5px #00ccff;
+    max-width: 90%;
+    line-height: 1.3; /* Slightly adjusted line-height */
+    background: rgba(10, 10, 31, 0.8); /* Semi-transparent background for readability */
+    padding: 8px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 255, 153, 0.4);
+    /* position: relative; */ /* Removed relative positioning */
+    z-index: 3; /* Ensure text is above controls */
+    display: block; /* Changed from inline-block for better centering */
+    margin-left: auto;
+    margin-right: auto;
+    width: fit-content; /* Adjust width to content */
+}
+
+
+.hidden {
+    display: none !important;
+}
+
+/* Shared styles for overlay screens */
+#start-screen, #level-complete-screen, #game-over {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(10, 10, 31, 0.95), rgba(26, 42, 63, 0.95)); /* Darker overlay */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 10;
+    padding: 20px;
+    box-sizing: border-box;
+    animation: fadeIn 1s ease-in-out;
+    border-radius: 15px; /* Match game-container */
+    overflow-y: auto; /* Allow scrolling if content overflows */
+}
+
+
+/* Specific background for level complete if needed (JS sets image) */
+#level-complete-screen {
+    background-color: rgba(10, 10, 31, 0.7); /* Dark overlay for readability */
+    background-blend-mode: overlay;
+}
+
+.winner-text-container {
+    background: rgba(10, 10, 31, 0.85); /* Slightly more opaque */
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 25px rgba(0, 255, 153, 0.6);
+    border: 2px solid #00ff99;
+    max-width: 90%;
+    margin-bottom: 20px; /* Add space before buttons */
+}
+
+
+.animated-title {
+    color: #00ff99; /* Neon green */
+    font-size: clamp(32px, 5vw, 40px); /* Slightly smaller title */
+    margin: 0 0 15px 0; /* Added bottom margin */
+    text-shadow: 0 0 20px #00ff99, 0 0 40px #ff00cc;
+    animation: titleGlow 2s infinite alternate, titlePulse 3s infinite;
+    line-height: 1.2; /* Adjust line height for multi-line title */
+}
+
+/* Headers for overlay screens */
+#start-screen h1, #level-complete-screen h1, #game-over h1 {
+    color: #00ff99; /* Neon green */
+    font-size: clamp(30px, 5.5vw, 42px); /* Adjusted size */
+    margin: 0 0 15px 0; /* Added bottom margin */
+    text-shadow: 0 0 20px #00ff99, 0 0 40px #ff00cc;
+    animation: neonGlow 1.5s infinite alternate;
+}
+
+
+#game-over h1 {
+    color: #ff00cc; /* Neon purple */
+    text-shadow: 0 0 20px #ff00cc, 0 0 40px #00ff99;
+}
+
+.level-up {
+    animation: levelUp 1s ease-in-out;
+}
+
+.neon-line {
+    width: 80%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #00ff99, transparent);
+    margin: 15px 0; /* Adjusted margin */
+    animation: pulse 2s infinite;
+}
+
+/* Text content on overlay screens */
+.instructions, #level-complete-screen p, #game-over p {
+    font-size: clamp(14px, 3vw, 16px); /* Slightly smaller max size */
+    color: #00ccff; /* Cyan */
+    margin: 10px 0; /* Reduced vertical margin */
+    text-shadow: 0 0 10px #00ccff;
+    font-family: 'Roboto', sans-serif;
+    animation: slideIn 1s ease-in-out;
+    max-width: 90%;
+    line-height: 1.5;
+    padding: 10px;
+    background: rgba(10, 10, 31, 0.8);
+    border-radius: 10px; /* Slightly smaller radius */
+    box-sizing: border-box;
+}
+
+
+.bible-verse {
+    font-size: clamp(13px, 2.8vw, 15px); /* Adjusted size */
+    color: #ffcc00; /* Neon orange */
+    text-shadow: 0 0 10px #ffcc00;
+    font-style: italic;
+    margin: 15px 0;
+}
+
+#game-over p {
+    color: #ff00cc; /* Purple */
+    text-shadow: 0 0 10px #ff00cc;
+}
+
+.button-container {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+    width: 100%; /* Ensure container takes width */
+    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+}
+
+.glow-btn {
+    padding: 15px 25px; /* Adjusted padding */
+    font-size: clamp(16px, 3.5vw, 18px); /* Adjusted size */
+    background: linear-gradient(45deg, #ff00cc, #00ff99);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    text-shadow: 0 0 10px #fff;
+    box-shadow: 0 0 20px #00ff99;
+    transition: transform 0.2s, box-shadow 0.3s;
+    animation: pulseGlow 1.5s infinite;
+    touch-action: manipulation; /* Prevent double-tap zoom on mobile */
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+    position: relative;
+    z-index: 15; /* Ensure button is above other elements */
+    min-width: 180px; /* Adjusted min-width */
+    min-height: 55px; /* Adjusted min-height */
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+#start-over-btn {
+    background: linear-gradient(45deg, #ff00cc, #ffcc00); /* Purple to orange */
+}
+
+#next-level-btn {
+    background: linear-gradient(45deg, #00ff99, #00ccff); /* Green to cyan */
+}
+
+#restart-btn { /* Style for the game over restart button */
+     background: linear-gradient(45deg, #ff00cc, #ff5500); /* Purple to Red/Orange */
+}
+
+
+.glow-btn:hover {
+    transform: scale(1.05); /* Slightly reduced hover scale */
+    box-shadow: 0 0 30px #ff00cc; /* Adjusted hover glow */
+}
+
+.glow-btn:active {
+    transform: scale(0.95);
+}
+
+.back-link {
+    margin-top: 15px; /* Adjusted spacing */
+    text-decoration: none;
+}
+
+.back-btn {
+    padding: 10px 20px;
+    font-size: clamp(14px, 3vw, 16px);
+    min-width: auto; /* Allow back button to be smaller */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes neonGlow {
+    from { text-shadow: 0 0 10px #00ff99, 0 0 20px #00ff99; }
+    to { text-shadow: 0 0 20px #00ff99, 0 0 40px #ff00cc; }
+}
+
+@keyframes pulse {
+    0% { transform: scaleX(1); }
+    50% { transform: scaleX(1.2); }
+    100% { transform: scaleX(1); }
+}
+
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 10px #00ff99; }
+    50% { box-shadow: 0 0 30px #ff00cc; }
+    100% { box-shadow: 0 0 10px #00ff99; }
+}
+
+@keyframes titleGlow {
+    from { text-shadow: 0 0 10px #00ff99, 0 0 20px #00ff99; }
+    to { text-shadow: 0 0 30px #00ff99, 0 0 60px #ff00cc; }
+}
+
+@keyframes titlePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); } /* Reduced pulse effect */
+    100% { transform: scale(1); }
+}
+
+@keyframes levelUp {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; } /* Slightly reduced scale */
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* --- Media Queries --- */
+@media (max-width: 600px) {
+    #game-container {
+        padding: 5px;
+        border-width: 1px; /* Thinner border on mobile */
+    }
+    #canvas-container {
+        max-height: 55vh; /* Adjusted max-height */
+        margin-bottom: 5px; /* Added small margin */
+        border-width: 3px;
+    }
+    #game-canvas {
+        width: 100%;
+        height: 100%;
+    }
+    .movement-controls {
+        display: none; /* Hide the desktop grid controls on mobile */
+    }
+
+    /* Ensure mobile control styles apply correctly */
+     #mobile-controls-section .control-btn {
+        padding: 8px;
+        font-size: clamp(10px, 2vw, 12px);
+        width: 60px; /* Keep size */
+        height: 60px; /* Keep size */
+        border-radius: 50%; /* Circular button */
+        box-shadow: 0 0 15px rgba(0, 255, 153, 0.6);
+    }
+    .throw-btn#mobile-throw-btn { /* Specific targeting for mobile throw */
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        font-size: clamp(10px, 2vw, 12px);
+    }
+
+    .glow-btn {
+        padding: 12px 20px; /* Adjusted padding */
+        font-size: clamp(14px, 3vw, 16px); /* Adjusted size */
+        min-width: 150px;
+        min-height: 50px;
+    }
+
+    #start-screen h1, #level-complete-screen h1, #game-over h1 {
+        font-size: clamp(24px, 5vw, 32px); /* Adjusted size */
+    }
+    .instructions, #level-complete-screen p, #game-over p {
+        font-size: clamp(12px, 2.5vw, 14px);
+        max-width: 95%;
+        padding: 8px;
+    }
+    .button-container {
+        flex-direction: column; /* Stack buttons vertically */
+        gap: 10px;
+        align-items: center; /* Center stacked buttons */
+    }
+    #controls {
+        display: none; /* Hide the original controls container on mobile */
+    }
+    #mobile-controls-section {
+        display: flex; /* Show the new section on mobile */
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 10px; /* Added horizontal padding */
+        margin-top: 5px; /* Added margin */
+        width: 100%;
+        box-sizing: border-box; /* Include padding in width */
+    }
+    #instructions-container {
+        display: block; /* Show the instructions container on mobile */
+        margin-top: 5px;
+        margin-bottom: 5px;
+        width: 100%;
+    }
+    #control-instructions {
+        /* position: static; */ /* Already static */
+        /* transform: none; */ /* Not needed */
+        font-size: clamp(10px, 2vw, 12px);
+        max-width: 90%; /* Limit width */
+        padding: 5px 10px;
+        background: rgba(10, 10, 31, 0.9); /* Darker background */
+        color: #00ff99; /* Neon green */
+        text-shadow: 0 0 5px #00ff99;
+        border-radius: 5px;
+        text-align: center;
+        line-height: 1.3; /* Adjusted line height */
+        margin-left: auto; /* Center the container */
+        margin-right: auto;
+    }
+    #joystick-container {
+        /* position: static; */ /* Already static */
+        width: 70px; /* Slightly larger joystick base */
+        height: 70px;
+        flex-shrink: 0;
+        box-shadow: 0 0 15px rgba(0, 255, 153, 0.6);
+        border-radius: 50%; /* Ensure it's circular */
+        background: rgba(255, 255, 255, 0.1); /* Fainter background */
+        position: relative; /* Needed for absolute positioning of joystick nub */
+        touch-action: none; /* Crucial for joystick */
+
+    }
+    #joystick {
+        width: 35px; /* Larger nub */
+        height: 35px;
+        top: 17.5px; /* Centered */
+        left: 17.5px; /* Centered */
+        background: #00ccff;
+        border-radius: 50%;
+        position: absolute;
+    }
+    #mobile-throw-btn {
+        /* position: static; */ /* Already static */
+        width: 60px; /* Keep size */
+        height: 60px; /* Keep size */
+        font-size: clamp(10px, 2vw, 12px);
+        flex-shrink: 0;
+    }
+}
+
+/* Blinking effect for low health David */
+@keyframes blinkWarning {
+  0%, 100% { opacity: 1; box-shadow: 0 0 20px rgba(255, 0, 100, 0); } /* Red glow */
+  50% { opacity: 0.3; box-shadow: 0 0 20px rgba(255, 0, 100, 0.8); }
+}
+
+.low-health-blinking {
+  animation: blinkWarning 0.8s infinite;
+}
