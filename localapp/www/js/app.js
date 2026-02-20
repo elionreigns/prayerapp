@@ -193,7 +193,7 @@
     if (cached && cached.success && cached.data) renderRedLetters(container, cached);
 
     var apiUrl = SITE + '/prayers/redletters_api.php';
-    fetch(apiUrl)
+    fetch(apiUrl, { credentials: 'include' })
       .then(function(r) { return r.json(); })
       .then(function(res) {
         if (window.APP_STORAGE && res && res.success && res.data) window.APP_STORAGE.setRedLettersCache(res);

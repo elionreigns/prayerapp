@@ -234,3 +234,5 @@ Your requirements for the **Power Prayer app** (so it’s ready for Codemagic �
 | **Repo ready for Codemagic** so you can build iOS and submit to App Store | Done — elionreigns/prayerapp pushed; build from `localapp/`. |
 
 **Nothing else is required in the codebase** for this scope. Your remaining steps are: pay Apple $99, deploy the files in DEPLOY-THESE-TO-LIVE.txt (including `app_login_status.php`) to your live site, set up App Store Connect (privacy URL, listing, etc.), then run the build in Codemagic and submit the .ipa.
+
+For **how login and chatbots work** when someone downloads the app (same session, same account, no “disconnect” from the website), see **APP-LOGIN-AND-CHATBOT-FLOW.md**.
