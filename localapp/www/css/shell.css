@@ -235,7 +235,7 @@ body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inse
 .native-chat-controls .interpret-btn:hover, .native-chat-controls .new-dream-btn:hover, .native-chat-controls .clear-btn:hover, .native-chat-controls .save-session-btn:hover {
   transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.2);
 }
-.native-chat-form { position: sticky; bottom: 0; left: 0; right: 0; padding: 14px; background: var(--holy-blue); border-top: 1px solid rgba(201, 162, 39, 0.2); }
+.native-chat-form { padding: 14px; background: var(--holy-blue); border-top: 1px solid rgba(201, 162, 39, 0.2); }
 .native-chat-form textarea {
   width: 100%; min-height: 88px; padding: 14px; border-radius: 14px;
   border: 2px solid var(--holy-blue-light); background: var(--holy-blue-mid); color: var(--text);
@@ -261,7 +261,8 @@ body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inse
   color: #1a2b49; margin-bottom: 20px; border: 2px solid rgba(74,144,226,0.12); box-sizing: border-box;
 }
 .p48x-wrap { padding-bottom: 24px; }
-.p48x-qualities-grid { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; justify-content: center; }
+.p48x-qualities-grid { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; justify-content: center; }
+.p48x-question-hint { font-size: 0.85rem; color: #555; margin: 0 0 12px; line-height: 1.4; }
 /* Pill-shaped quality buttons like website .quality-btn */
 .p48x-quality-btn {
   padding: 14px 20px; border-radius: 30px; border: 2px solid rgba(74,144,226,0.4);
@@ -285,6 +286,8 @@ body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inse
 .p48x-card .p48x-form-row { margin-bottom: 16px; }
 .p48x-card .p48x-form-row label { display: block; font-size: 0.95rem; font-weight: 600; color: #1a2b49; margin-bottom: 6px; }
 .p48x-card .p48x-form-row select { width: 100%; padding: 12px 14px; border-radius: 12px; border: 2px solid #e0e0e0; background: #fafafa; color: #1a2b49; font-size: 0.95rem; }
+.p48x-question-display { width: 100%; padding: 12px 14px; border-radius: 12px; border: 2px solid #e0e0e0; background: #fafafa; color: #1a2b49; font-size: 0.95rem; min-height: 2.5em; line-height: 1.5; box-sizing: border-box; }
+.p48x-question-display:empty::before { content: 'Select a quality above to begin your reflection.'; color: #888; }
 .p48x-card .p48x-form-row textarea { width: 100%; min-height: 120px; padding: 14px; border-radius: 12px; border: 2px solid #e0e0e0; background: #fafafa; color: #1a2b49; font-size: 1rem; resize: vertical; box-sizing: border-box; }
 .p48x-save-btn { margin: 16px 0 0; padding: 14px 28px; background: linear-gradient(135deg, #4a90e2 0%, #2a6eb6 100%); color: #fff; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 14px rgba(74,144,226,0.4); }
 .p48x-save-btn:hover { opacity: 0.95; transform: translateY(-1px); }
@@ -405,7 +408,8 @@ body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inse
   background: #fff; color: #333; width: 100%; box-sizing: border-box;
 }
 .dreams-opt-label select:focus { outline: none; border-color: #4a90e2; box-shadow: 0 0 0 2px rgba(74,144,226,0.2); }
-.native-chat-msg.initial-greeting { align-self: center; text-align: center; font-style: italic; max-width: 95%; background: rgba(201, 162, 39, 0.12); }
+.native-chat-msg.initial-greeting { align-self: center; text-align: center; font-style: italic; max-width: 95%; background: rgba(201, 162, 39, 0.12); color: #1a1a1a; }
+.native-chat-msg.initial-greeting .msg-text { color: #1a1a1a; }
 .counsel-response .counselor-title { font-family: inherit; font-size: 1.1rem; font-weight: 700; color: var(--holy-gold-bright); margin-bottom: 6px; }
 
 /* Urim — instruction bubble + history */

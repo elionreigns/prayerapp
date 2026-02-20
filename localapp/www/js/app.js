@@ -726,7 +726,8 @@
       '<div class="p48x-card">' +
       '<div class="p48x-wrap">' +
       '<div class="p48x-qualities-grid" id="p48x-qualities"></div>' +
-      '<div class="p48x-form-row"><label>Reflection question</label><select id="p48x-question"><option value="">Select a quality above to begin your reflection.</option></select></div>' +
+      '<p class="p48x-question-hint">Click a quality above to get a random question; click again to get a different one.</p>' +
+      '<div class="p48x-form-row"><label>Reflection question</label><div id="p48x-question-display" class="p48x-question-display" aria-live="polite">Select a quality above to begin your reflection.</div></div>' +
       '<div class="p48x-form-row"><label>Your reflection</label><textarea id="p48x-entry" rows="4" placeholder="Write your reflection…"></textarea></div>' +
       '<button type="button" id="p48x-save" class="p48x-save-btn">Save entry</button>' +
       '</div></div>' +
@@ -737,13 +738,22 @@
     var p48xBack = container.querySelector('.back-to-iframe, .native-back-link');
     if (p48xBack) p48xBack.addEventListener('click', backLinkHandler);
     var qualDiv = document.getElementById('p48x-qualities');
-    var questionSel = document.getElementById('p48x-question');
+    var questionDisplay = document.getElementById('p48x-question-display');
     var entryText = document.getElementById('p48x-entry');
     var saveBtn = document.getElementById('p48x-save');
     var listEl = document.getElementById('p48x-list');
     var scheduleBtn = document.getElementById('p48x-schedule-btn');
     var googleStatus = document.getElementById('p48x-google-status');
     var selectedQuality = 'Purity';
+    var currentQuestion = '';
+
+    function setRandomQuestionForQuality(q) {
+      var questions = getQuestionsForQuality(q);
+      if (questions.length === 0) return;
+      var idx = Math.floor(Math.random() * questions.length);
+      currentQuestion = questions[idx];
+      questionDisplay.textContent = currentQuestion;
+    }
 
     P48_QUALITIES.forEach(function(q) {
       var btn = document.createElement('button');
@@ -755,27 +765,11 @@
         qualDiv.querySelectorAll('.p48x-quality-btn').forEach(function(b) { b.classList.remove('active'); });
         btn.classList.add('active');
         selectedQuality = q;
-        var questions = getQuestionsForQuality(q);
-        questionSel.innerHTML = '<option value="">Select a quality above to begin your reflection.</option>';
-        questions.forEach(function(text) {
-          var opt = document.createElement('option');
-          opt.value = text;
-          opt.textContent = text;
-          questionSel.appendChild(opt);
-        });
+        setRandomQuestionForQuality(q);
       });
       qualDiv.appendChild(btn);
     });
-    (function() {
-      var questions = getQuestionsForQuality('Purity');
-      questionSel.innerHTML = '<option value="">Select a quality above to begin your reflection.</option>';
-      questions.forEach(function(text) {
-        var opt = document.createElement('option');
-        opt.value = text;
-        opt.textContent = text;
-        questionSel.appendChild(opt);
-      });
-    })();
+    setRandomQuestionForQuality('Purity');
 
     function isEmptyJournalHtml(html) {
       if (!html || typeof html !== 'string') return true;
@@ -808,7 +802,7 @@
     loadEntries();
 
     saveBtn.addEventListener('click', function() {
-      var question = questionSel.value;
+      var question = currentQuestion;
       var text = (entryText.value || '').trim();
       if (!question || !text) return;
       var formData = new FormData();
