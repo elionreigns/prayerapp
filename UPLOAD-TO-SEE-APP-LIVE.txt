@@ -1,0 +1,60 @@
+Upload checklist — so https://www.prayerauthority.com/app/ works
+
+Upload everything below to your live server (FTP/cPanel/File Manager).
+Paths are relative to your site root (usually public_html/).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. FILES OUTSIDE THE APP FOLDER (from your main site project or this repo)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Source                                    Upload to live site
+  ─────────────────────────────────────────────────────────────────────────
+  .htaccess                    →            public_html/.htaccess
+  security_config.php          →            public_html/security_config.php
+  app-config.php               →            public_html/app-config.php
+  prayers/header.php           →            public_html/prayers/header.php
+  deploy/app_login_status.php   →            public_html/prayers/app_login_status.php
+  (from this repo)
+
+  If you have a full site project, use its public_html/ versions. If you only
+  have this repo, use deploy/app_login_status.php; the other four files must
+  come from your existing site (they contain server config).
+
+  Why:
+  • app-config.php — app at /app/ gets SITE_URL from here (no env vars).
+  • app_login_status.php — app shows username + green dot when logged in.
+  • header.php — allows the app’s iframe to load login/dashboard/prayers.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. THE APP FOLDER (from this repo)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Upload the CONTENTS of:
+
+    localapp/www/
+
+  into your live site’s:
+
+    public_html/app/
+
+  So on the server you have:
+    public_html/app/index.html
+    public_html/app/js/          (config.js, config-loader.js, app.js, storage.js)
+    public_html/app/css/        (shell.css)
+    public_html/app/games/      (David vs Goliath — optional but recommended)
+
+  When serving at /app/, add <base href="/app/" /> inside <head> of index.html
+  on the server so CSS/JS load correctly.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Open: https://www.prayerauthority.com/app/
+
+  You should see the Power Prayer shell (blue/gold header, hamburger menu).
+  After logging in (via the app’s Login), the header should show your name and
+  a green dot. Tap a prayer or tool — the iframe should load your site.
+
+  Codemagic builds the iOS app from this repo; the web app is what you see at
+  prayerauthority.com/app/ after you upload the files above.
