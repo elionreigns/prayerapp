@@ -181,6 +181,7 @@ body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inse
 .p48x-calendar-section { margin: 20px 0; padding: 22px; background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 40%, rgba(255,235,59,0.25) 100%); border-radius: 16px; border: 2px solid rgba(201,162,39,0.4); box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
 .p48x-calendar-title { margin: 0 0 10px; font-size: 1.15rem; font-weight: 700; color: #1a1a1a; }
 .p48x-calendar-desc { margin: 0 0 16px; font-size: 0.95rem; color: #333; line-height: 1.5; }
+.p48x-calendar-note { margin: 0 0 14px; font-size: 0.85rem; color: #555; line-height: 1.45; font-style: italic; }
 .p48x-calendar-btns { display: flex; flex-wrap: wrap; gap: 12px; }
 .p48x-btn { padding: 14px 20px; border-radius: 12px; font-weight: 600; font-size: 0.95rem; text-decoration: none; border: none; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; display: inline-flex; align-items: center; gap: 8px; }
 .p48x-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }

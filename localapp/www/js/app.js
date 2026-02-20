@@ -423,17 +423,29 @@
 
   var P48_QUALITIES = ['Purity', 'Truth', 'Praiseworthy', 'Wholesome', 'Excellence', 'Admirable', 'Peace', 'Honorable', 'Lovely'];
   var P48_ICONS = { Purity: 'fa-heart', Truth: 'fa-check-circle', Praiseworthy: 'fa-bullhorn', Wholesome: 'fa-seedling', Excellence: 'fa-star', Admirable: 'fa-thumbs-up', Peace: 'fa-hand-peace', Honorable: 'fa-crown', Lovely: 'fa-spa' };
-  var P48_QUESTIONS = {
-    Purity: 'What thought or motive can you surrender to God today for greater purity?',
-    Truth: 'Where do you need to align more fully with God\'s truth this week?',
-    Praiseworthy: 'What act of God\'s faithfulness can you praise Him for today?',
-    Wholesome: 'What wholesome input can you choose to feed your mind today?',
-    Excellence: 'In what one task can you offer God excellence today?',
-    Admirable: 'What admirable action can you take today that honors God?',
-    Peace: 'What anxiety can you surrender to God for His peace?',
-    Honorable: 'How can you act with honor in a difficult situation?',
-    Lovely: 'Where have you seen the loveliness of God\'s creation recently?'
-  };
+  var P48_QUESTIONS_BY_QUALITY = window.P48_QUESTIONS_BY_QUALITY || {};
+  (function addMoreP48Questions() {
+    var extra = {
+      Purity: ['What one choice today would make your heart more pure before God?', 'How can you guard your eyes and mind from impurity in the next 24 hours?', 'Where do you need God to create a clean heart in you right now?'],
+      Truth: ['What lie have you believed about yourself that God\'s Word says is not true?', 'How can you speak truth in love to someone this week?', 'What Scripture can you memorize to combat a specific lie?'],
+      Praiseworthy: ['What can you thank God for in the middle of your current difficulty?', 'How can you make your next conversation more praiseworthy?', 'What song or Psalm reflects your praise to God today?'],
+      Wholesome: ['What one unwholesome habit can you replace with something that builds you up?', 'How can you make your next meal or break more wholesome for your soul?', 'What wholesome boundary do you need to set this week?'],
+      Excellence: ['What one task can you do with excellence today as an act of worship?', 'Where have you settled for good enough when God is calling you higher?', 'How can you honor God with your best in a small area?'],
+      Admirable: ['What admirable trait do you want others to see in you this week?', 'Who can you encourage by pointing out something admirable in them?', 'What would an admirable response look like in your current challenge?'],
+      Peace: ['What are you holding onto that is stealing your peace?', 'How can you practice being still before God today?', 'What promise of God can you hold onto when anxiety rises?'],
+      Honorable: ['What honorable choice can you make when no one is watching?', 'How can you show honor to someone who has hurt you?', 'What would it look like to honor God with your time today?'],
+      Lovely: ['What lovely thing in creation can you pause to thank God for today?', 'How can you add something lovely to someone else\'s day?', 'Where have you been cynical instead of choosing to see what is lovely?']
+    };
+    P48_QUALITIES.forEach(function(q) {
+      if (!P48_QUESTIONS_BY_QUALITY[q]) P48_QUESTIONS_BY_QUALITY[q] = [];
+      if (extra[q]) extra[q].forEach(function(text) { P48_QUESTIONS_BY_QUALITY[q].push(text); });
+    });
+  })();
+  function getQuestionsForQuality(q) {
+    var list = P48_QUESTIONS_BY_QUALITY[q];
+    if (list && list.length) return list;
+    return ['What thought or motive can you surrender to God today for greater purity?', 'Where do you need to align more fully with God\'s truth this week?', 'What act of God\'s faithfulness can you praise Him for today?', 'What wholesome input can you choose to feed your mind today?', 'In what one task can you offer God excellence today?', 'What admirable action can you take today that honors God?', 'What anxiety can you surrender to God for His peace?', 'How can you act with honor in a difficult situation?', 'Where have you seen the loveliness of God\'s creation recently?'].slice(P48_QUALITIES.indexOf(q), P48_QUALITIES.indexOf(q) + 1);
+  }
 
   function loadP48xInApp() {
     var container = el.nativeP48x;
@@ -441,6 +453,7 @@
     var calendarHtml = '<div class="p48x-calendar-section" id="p48x-calendar-section">' +
       '<h4 class="p48x-calendar-title">Create a Daily Reflection Habit</h4>' +
       '<p class="p48x-calendar-desc">Schedule a full day of recurring reflection prompts in your local time. You will get one for each category, every day.</p>' +
+      '<p class="p48x-calendar-note">Same as on the website: reminder links in your calendar or email open the journal on the site, scroll to the reflection area, and show a random prompt for that quality.</p>' +
       '<div class="p48x-calendar-btns">' +
       '<a href="' + SITE + '/prayers/google_auth.php" class="p48x-btn p48x-btn-google" target="_self"><i class="fab fa-google"></i> Connect Google Calendar</a>' +
       '<button type="button" id="p48x-schedule-btn" class="p48x-btn p48x-btn-schedule"><i class="fas fa-calendar-plus"></i> Activate Daily Schedule</button>' +
@@ -482,15 +495,27 @@
         qualDiv.querySelectorAll('.p48x-quality-btn').forEach(function(b) { b.classList.remove('active'); });
         btn.classList.add('active');
         selectedQuality = q;
+        var questions = getQuestionsForQuality(q);
         questionSel.innerHTML = '';
-        var opt = document.createElement('option');
-        opt.value = P48_QUESTIONS[q];
-        opt.textContent = P48_QUESTIONS[q];
-        questionSel.appendChild(opt);
+        questions.forEach(function(text) {
+          var opt = document.createElement('option');
+          opt.value = text;
+          opt.textContent = text;
+          questionSel.appendChild(opt);
+        });
       });
       qualDiv.appendChild(btn);
     });
-    questionSel.innerHTML = '<option value="' + escapeHtml(P48_QUESTIONS.Purity) + '">' + escapeHtml(P48_QUESTIONS.Purity) + '</option>';
+    (function() {
+      var questions = getQuestionsForQuality('Purity');
+      questionSel.innerHTML = '';
+      questions.forEach(function(text) {
+        var opt = document.createElement('option');
+        opt.value = text;
+        opt.textContent = text;
+        questionSel.appendChild(opt);
+      });
+    })();
 
     function isEmptyJournalHtml(html) {
       if (!html || typeof html !== 'string') return true;

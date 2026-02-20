@@ -64,6 +64,14 @@ So: **Login is synced with the website** because the app never has its own login
 
 ---
 
+## P48X Google Calendar sync (same from app or site)
+
+When a user taps **Connect Google Calendar** or **Activate Daily Schedule** in the app, the app calls the same server endpoints as the website: `google_auth.php` (to connect their Google account) and `schedule_notifications.php` (to create the daily reflection events). The server **always** builds calendar/email links to the **website**:  
+`https://www.prayerauthority.com/prayers/p48x.php?quality=…#journal-area-anchor`.  
+So when they click a reminder link (from Gmail or Google Calendar), it opens the **website** P48X page, scrolls to the reflection area (`#journal-area-anchor`), and shows a **random** prompt for that quality—same behavior whether they set up the schedule from the app or from the site. The app does not change this; reminder links are not opened in the app so the full site experience (scroll + random thought) is preserved.
+
+---
+
 ## 4. What the app code does to make this work
 
 - **Login/Register/Dashboard/Prayers**  

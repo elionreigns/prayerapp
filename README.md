@@ -9,6 +9,7 @@ Full Power Prayer app with native in-app screens that cross-sync with [Prayer Au
 - **APP-LOGIN-AND-CHATBOT-FLOW.md** — How login and chatbots work when someone downloads the app (synced with the website; one session, one account).
 - **APP-ARCHITECTURE.md** — What loads from the site (iframe) vs what’s built into the app.
 - **WHERE-APP-FILES-LIVE.md** — Where the app files live: repo (Codemagic/iOS) vs website `/app/` (browser).
+- **APP-STORE-COMPLIANCE.md** — Apple App Store rules checklist (4.2 minimum functionality, privacy, login, etc.) so you can ensure the app is accepted.
 - **HolyVibe.md** — Single source of truth; main vs localapp; data flow; App Store checklist.
 - **HOST-APP-SHELL-FOR-PHONE.md** — Deploy the web app to `public_html/app/` so users can open it on their phone.
 - **ENV-GITHUB-APPSTORE.md** — No env vars in the app; server config; what to push; App Store steps.
