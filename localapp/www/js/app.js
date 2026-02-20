@@ -126,6 +126,40 @@
 
   function onIframeLoad() {
     showLoading(false);
+    refreshLoginState();
+  }
+
+  function refreshLoginState() {
+    var headerUser = document.getElementById('header-user');
+    var headerUsername = document.getElementById('header-username');
+    var drawerMsg = document.getElementById('drawer-login-msg');
+    var drawerLoginLink = document.getElementById('drawer-login-link');
+    if (!headerUser || !headerUsername) return;
+    fetch(SITE + '/prayers/app_login_status.php', { credentials: 'include' })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data && data.loggedIn && data.displayName) {
+          headerUsername.textContent = data.displayName;
+          headerUser.style.display = 'flex';
+          if (drawerMsg) drawerMsg.textContent = 'Signed in as ' + data.displayName;
+          if (drawerLoginLink) {
+            drawerLoginLink.classList.remove('highlight');
+            drawerLoginLink.textContent = 'Login';
+          }
+        } else {
+          headerUser.style.display = 'none';
+          if (drawerMsg) drawerMsg.textContent = 'Log in to sync with your website account.';
+          if (drawerLoginLink) {
+            drawerLoginLink.classList.add('highlight');
+            drawerLoginLink.textContent = 'Login';
+          }
+        }
+      })
+      .catch(function() {
+        headerUser.style.display = 'none';
+        if (drawerMsg) drawerMsg.textContent = 'Log in to sync with your website account.';
+        if (drawerLoginLink) drawerLoginLink.classList.add('highlight');
+      });
   }
 
   function renderRedLetters(container, res) {
@@ -403,7 +437,29 @@
   function loadP48xInApp() {
     var container = el.nativeP48x;
     if (!container) return;
-    container.innerHTML = '<div class="native-view-header">P48X Reflections</div><a href="#" class="back-to-iframe native-back-link">← Back to menu</a><div class="native-chat-wrap"><div class="native-p48x-qualities" id="p48x-qualities"></div><div class="translator-row"><label>Reflection question</label><select id="p48x-question"></select></div><div class="translator-row"><label>Your reflection</label><textarea id="p48x-entry" rows="4" placeholder="Write your reflection…"></textarea></div><button type="button" id="p48x-save">Save entry</button><div class="native-p48x-list" id="p48x-list"><div class="rl-loading">Loading journal…</div></div></div>';
+    var calendarHtml = '<div class="p48x-calendar-section" id="p48x-calendar-section">' +
+      '<h4 class="p48x-calendar-title">Create a Daily Reflection Habit</h4>' +
+      '<p class="p48x-calendar-desc">Schedule recurring reflection prompts in your local time. One for each category, every day.</p>' +
+      '<div class="p48x-calendar-btns">' +
+      '<a href="' + SITE + '/prayers/google_auth.php" class="p48x-btn p48x-btn-google" target="_self">Connect Google Calendar</a>' +
+      '<button type="button" id="p48x-schedule-btn" class="p48x-btn p48x-btn-schedule">Activate Daily Schedule</button>' +
+      '</div>' +
+      '<p id="p48x-google-status" class="p48x-google-status"></p>' +
+      '</div>';
+    container.innerHTML =
+      '<div class="native-view-header">P48X Reflections</div>' +
+      '<a href="#" class="back-to-iframe native-back-link">← Back to menu</a>' +
+      '<p class="p48x-scripture">"…whatever is true, honorable, just, pure, lovely, commendable—think about these things." — Philippians 4:8</p>' +
+      '<div class="native-chat-wrap p48x-wrap">' +
+      '<div class="p48x-qualities-grid" id="p48x-qualities"></div>' +
+      '<div class="translator-row"><label>Reflection question</label><select id="p48x-question"></select></div>' +
+      '<div class="translator-row"><label>Your reflection</label><textarea id="p48x-entry" rows="4" placeholder="Write your reflection…"></textarea></div>' +
+      '<button type="button" id="p48x-save" class="p48x-save-btn">Save entry</button>' +
+      calendarHtml +
+      '<h3 class="p48x-journal-title">Your Journal History</h3>' +
+      '<p class="p48x-scroll-hint">Scroll down to see your journal entries after saving reflections.</p>' +
+      '<div class="native-p48x-list p48x-entries-list" id="p48x-list"><div class="rl-loading">Loading journal…</div></div>' +
+      '</div>';
     var p48xBack = container.querySelector('.back-to-iframe, .native-back-link');
     if (p48xBack) p48xBack.addEventListener('click', backLinkHandler);
     var qualDiv = document.getElementById('p48x-qualities');
@@ -411,15 +467,18 @@
     var entryText = document.getElementById('p48x-entry');
     var saveBtn = document.getElementById('p48x-save');
     var listEl = document.getElementById('p48x-list');
+    var scheduleBtn = document.getElementById('p48x-schedule-btn');
+    var googleStatus = document.getElementById('p48x-google-status');
     var selectedQuality = 'Purity';
 
     P48_QUALITIES.forEach(function(q) {
       var btn = document.createElement('button');
+      btn.className = 'p48x-quality-btn active';
       btn.textContent = q;
       btn.dataset.quality = q;
-      if (q === 'Purity') btn.classList.add('active');
+      if (q !== 'Purity') btn.classList.remove('active');
       btn.addEventListener('click', function() {
-        qualDiv.querySelectorAll('button').forEach(function(b) { b.classList.remove('active'); });
+        qualDiv.querySelectorAll('.p48x-quality-btn').forEach(function(b) { b.classList.remove('active'); });
         btn.classList.add('active');
         selectedQuality = q;
         questionSel.innerHTML = '';
@@ -432,6 +491,12 @@
     });
     questionSel.innerHTML = '<option value="' + escapeHtml(P48_QUESTIONS.Purity) + '">' + escapeHtml(P48_QUESTIONS.Purity) + '</option>';
 
+    function isEmptyJournalHtml(html) {
+      if (!html || typeof html !== 'string') return true;
+      var t = html.replace(/\s+/g, ' ').trim();
+      return t === '' || t.indexOf('Your journal notes will appear here') !== -1;
+    }
+
     function loadEntries() {
       listEl.innerHTML = '<div class="rl-loading">Loading…</div>';
       fetch(SITE + '/prayers/p48x_ajax.php?action=get_entries_page&page=1', { credentials: 'include' })
@@ -439,14 +504,19 @@
         .then(function(res) {
           listEl.innerHTML = '';
           if (res.redirect || (res.success === false && res.message && res.message.indexOf('Authentication') !== -1)) {
-            listEl.innerHTML = '<p class="native-auth-msg">Please <a href="' + SITE + '/prayers/login.php" target="_blank">log in</a> to save and view P48X reflections.</p>';
+            listEl.innerHTML = '<p class="native-auth-msg">Please <a href="' + SITE + '/prayers/login.php" target="_self">log in</a> to save and view P48X reflections.</p>';
             return;
           }
-          if (res.success && res.html) listEl.innerHTML = res.html;
-          else listEl.innerHTML = '<p class="native-auth-msg">Log in on the website to see your journal.</p>';
+          if (res.success && res.html && !isEmptyJournalHtml(res.html)) {
+            listEl.innerHTML = res.html;
+          } else if (res.success) {
+            listEl.innerHTML = '<p class="p48x-empty-journal">There are no entries yet. Save a reflection above to see it here.</p>';
+          } else {
+            listEl.innerHTML = '<p class="native-auth-msg">Log in on the website to see your journal.</p>';
+          }
         })
         .catch(function() {
-          listEl.innerHTML = '<p class="rl-error">Could not load journal.</p>';
+          listEl.innerHTML = '<p class="p48x-load-error">Couldn\'t load journal. Check your connection or <a href="' + SITE + '/prayers/login.php" target="_self">log in on the website</a>.</p>';
         });
     }
     loadEntries();
@@ -461,18 +531,46 @@
       formData.append('question', question);
       formData.append('entry_text', text);
       saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving…';
       fetch(SITE + '/prayers/p48x_ajax.php', { method: 'POST', body: formData, credentials: 'include' })
         .then(function(r) { return r.json(); })
         .then(function(res) {
           saveBtn.disabled = false;
+          saveBtn.textContent = 'Save entry';
           if (res.success) { entryText.value = ''; loadEntries(); }
-          else listEl.innerHTML = '<p class="rl-error">' + (res.message || 'Save failed. Log in on the website.') + '</p>';
+          else {
+            listEl.innerHTML = '<p class="rl-error">' + (res.message || 'Save failed. Log in on the website.') + '</p>';
+          }
         })
         .catch(function() {
           saveBtn.disabled = false;
+          saveBtn.textContent = 'Save entry';
           listEl.innerHTML = '<p class="rl-error">Network error. Log in on the website to save.</p>';
         });
     });
+
+    if (scheduleBtn && googleStatus) {
+      scheduleBtn.addEventListener('click', function() {
+        googleStatus.textContent = 'Scheduling…';
+        googleStatus.style.color = 'var(--text-muted)';
+        var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+        fetch(SITE + '/prayers/schedule_notifications.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'timezone=' + encodeURIComponent(tz),
+          credentials: 'include'
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            googleStatus.textContent = data.message || (data.success ? 'Schedule activated.' : 'Could not schedule.');
+            googleStatus.style.color = data.success ? '#22c55e' : '#e57373';
+          })
+          .catch(function() {
+            googleStatus.textContent = 'Could not activate schedule. Try again or use the website.';
+            googleStatus.style.color = '#e57373';
+          });
+      });
+    }
   }
 
   function loadTranslatorInApp() {
@@ -577,6 +675,7 @@
         else if (lastPath) initialPath = lastPath;
       }
       loadUrl(initialPath);
+      refreshLoginState();
     });
   });
 })();

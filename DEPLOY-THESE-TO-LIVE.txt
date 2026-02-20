@@ -4,13 +4,14 @@ Upload these files to your live site (prayerauthority.com) so the Power Prayer a
 2. public_html/security_config.php    --> upload to your site's public_html/
 3. public_html/prayers/header.php     --> upload to your site's public_html/prayers/
 4. public_html/app-config.php         --> upload to your site's public_html/  (app pulls SITE_URL from here)
+5. public_html/prayers/app_login_status.php --> upload to your site's public_html/prayers/  (app shows username + green dot when logged in)
+   (A copy is in this repo: deploy/app_login_status.php)
 
-header.php now sets frame-ancestors dynamically: when the request comes from localhost (any port) or 127.0.0.1, it allows that origin so the iframe always works. After upload, run "npm run preview" and open the URL shown — tap Login or any tool and the site should load.
+header.php sets frame-ancestors so the iframe works. app_login_status.php uses the same session as login so the app shell can show "Signed in as [name]" and the green dot in the header.
 
 ---
 To use the APP SHELL on your phone (e.g. at the beach) in the browser:
-- Create folder public_html/app/ on your live site.
-- Upload the CONTENTS of real applications/power-prayer/www (index.html, js/, css/) into public_html/app/.
-  (Or use localapp/www and also upload the games/ folder for David vs Goliath.)
+- Upload the CONTENTS of localapp/www/ (index.html, js/, css/, games/) to your live site's public_html/app/.
+- On the live server, add <base href="/app/"> inside <head> of public_html/app/index.html so assets load at https://www.prayerauthority.com/app/
 - On your phone, open: https://www.prayerauthority.com/app/
-Full steps: real applications/HOST-APP-SHELL-FOR-PHONE.md
+Full steps: HOST-APP-SHELL-FOR-PHONE.md

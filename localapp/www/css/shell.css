@@ -42,6 +42,23 @@ body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inse
 }
 .menu-btn:active { background: rgba(201, 162, 39, 0.3); transform: scale(0.97); }
 
+/* Logged-in user in header */
+.header-user {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  display: flex; align-items: center; gap: 8px; max-width: 50%;
+}
+.header-user-dot {
+  width: 10px; height: 10px; border-radius: 50%; background: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.7); flex-shrink: 0;
+}
+.header-username {
+  font-size: 0.9rem; font-weight: 600; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+@media (max-width: 360px) {
+  .header-username { font-size: 0.8rem; max-width: 80px; }
+}
+
 .app-content {
   position: fixed; top: 56px; left: 0; right: 0; bottom: 0; background: var(--holy-blue);
   overflow: hidden; overflow-x: hidden; display: flex; flex-direction: column;
@@ -137,10 +154,53 @@ body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inse
 .native-chat-form button:disabled { opacity: 0.6; cursor: not-allowed; }
 .native-auth-msg { padding: 16px; text-align: center; color: var(--text-muted); background: rgba(201, 162, 39, 0.1); border-radius: 12px; margin: 12px; }
 .native-auth-msg a { color: var(--holy-gold-bright); }
-.native-p48x-qualities { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-.native-p48x-qualities button { padding: 8px 14px; border-radius: 8px; border: 1px solid var(--holy-blue-light); background: var(--holy-blue-mid); color: var(--text); }
-.native-p48x-qualities button.active { border-color: var(--holy-gold); background: rgba(201, 162, 39, 0.2); color: var(--holy-gold-bright); }
-.native-p48x-list { padding: 12px; }
+/* P48X Reflections — app-native (match site, cleaner) */
+.p48x-scripture { font-style: italic; color: var(--text-muted); margin: 0 0 16px; font-size: 0.9rem; line-height: 1.4; }
+.p48x-wrap { padding-bottom: 24px; }
+.p48x-qualities-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+.p48x-quality-btn {
+  padding: 10px 16px; border-radius: 12px; border: 2px solid transparent;
+  font-size: 0.9rem; font-weight: 600; color: #1a1a1a; cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.p48x-quality-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+.p48x-quality-btn.active { transform: translateY(-2px); box-shadow: 0 0 0 2px var(--holy-gold-bright); }
+.p48x-quality-btn[data-quality="Purity"] { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); }
+.p48x-quality-btn[data-quality="Truth"] { background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%); }
+.p48x-quality-btn[data-quality="Praiseworthy"] { background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%); }
+.p48x-quality-btn[data-quality="Wholesome"] { background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%); }
+.p48x-quality-btn[data-quality="Excellence"] { background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); }
+.p48x-quality-btn[data-quality="Admirable"] { background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); }
+.p48x-quality-btn[data-quality="Peace"] { background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%); }
+.p48x-quality-btn[data-quality="Honorable"] { background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); }
+.p48x-quality-btn[data-quality="Lovely"] { background: linear-gradient(135deg, #f1f8e9 0%, #dcedc8 100%); }
+.p48x-save-btn { margin: 12px 0; padding: 12px 24px; background: linear-gradient(135deg, #4a90e2 0%, #2a6eb6 100%); color: #fff; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1rem; }
+.p48x-save-btn:hover { opacity: 0.95; }
+.p48x-save-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+.p48x-calendar-section { margin: 20px 0; padding: 20px; background: linear-gradient(135deg, rgba(26,43,73,0.5) 0%, rgba(74,144,226,0.15) 100%); border-radius: 16px; border: 1px solid rgba(201,162,39,0.25); }
+.p48x-calendar-title { margin: 0 0 8px; font-size: 1.1rem; color: var(--holy-gold-bright); }
+.p48x-calendar-desc { margin: 0 0 14px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+.p48x-calendar-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+.p48x-btn { padding: 12px 18px; border-radius: 12px; font-weight: 600; font-size: 0.9rem; text-decoration: none; border: none; cursor: pointer; transition: transform 0.2s; display: inline-block; }
+.p48x-btn:hover { transform: translateY(-2px); }
+.p48x-btn-google { background: #4285f4; color: #fff; }
+.p48x-btn-schedule { background: linear-gradient(135deg, var(--holy-gold) 0%, #b8860b 100%); color: var(--holy-blue); }
+.p48x-google-status { margin: 10px 0 0; font-size: 0.85rem; min-height: 1.2em; }
+.p48x-journal-title { margin: 24px 0 8px; font-size: 1.15rem; color: var(--holy-gold-bright); border-bottom: 1px solid rgba(201,162,39,0.3); padding-bottom: 8px; }
+.p48x-scroll-hint { font-size: 0.8rem; color: var(--text-muted); margin: 0 0 12px; }
+.p48x-empty-journal { text-align: center; color: var(--text-muted); padding: 24px 16px; background: rgba(27,40,56,0.5); border-radius: 12px; border: 1px dashed rgba(201,162,39,0.3); }
+.p48x-load-error { padding: 16px; text-align: center; color: #e57373; }
+.p48x-load-error a { color: var(--holy-gold-bright); }
+.native-p48x-list { padding: 0; }
+.native-p48x-list .past-entry {
+  background: rgba(27, 40, 56, 0.95); border-radius: 14px; padding: 16px; margin-bottom: 14px;
+  border: 1px solid rgba(201, 162, 39, 0.25); box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+.native-p48x-list .past-entry-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px; }
+.native-p48x-list .past-entry-quality { color: var(--holy-gold-bright); font-weight: 700; font-size: 0.95rem; }
+.native-p48x-list .past-entry-date { font-size: 0.8rem; color: var(--text-muted); }
+.native-p48x-list .past-entry-question { font-size: 0.9rem; color: var(--text-muted); margin: 0 0 10px; font-style: italic; line-height: 1.4; }
+.native-p48x-list .past-entry-text { margin: 0; line-height: 1.6; color: var(--text); }
 .native-p48x-entry { background: rgba(27, 40, 56, 0.9); border-radius: 12px; padding: 14px; margin-bottom: 12px; border: 1px solid rgba(201, 162, 39, 0.2); }
 .native-p48x-entry .entry-quality { color: var(--holy-gold); font-weight: 600; }
 .native-p48x-entry .entry-date { font-size: 0.8rem; color: var(--text-muted); }

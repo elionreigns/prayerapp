@@ -16,6 +16,10 @@
       <h1><span>Power</span> Prayer</h1>
       <p class="app-nav-label">Application  ☰  Navigation</p>
     </div>
+    <div id="header-user" class="header-user" style="display: none;" aria-label="Logged in">
+      <span class="header-user-dot" aria-hidden="true"></span>
+      <span id="header-username" class="header-username"></span>
+    </div>
   </header>
   <main class="app-content">
     <div id="preview-banner" class="preview-banner" style="display:none;">
@@ -47,11 +51,11 @@
   <aside class="drawer" aria-label="Menu">
     <div class="drawer-header">
       <h2>Power Prayer</h2>
-      <p>Log in to sync with your website account.</p>
+      <p id="drawer-login-msg">Log in to sync with your website account.</p>
     </div>
     <div class="drawer-section">
       <div class="drawer-section-title">Account</div>
-      <a href="#" class="drawer-link highlight" data-path="/prayers/login.php">Login</a>
+      <a href="#" class="drawer-link highlight" id="drawer-login-link" data-path="/prayers/login.php">Login</a>
       <a href="#" class="drawer-link" data-path="/prayers/register.php">Register</a>
       <a href="#" class="drawer-link" data-path="/prayers/dashboard.php">Dashboard</a>
     </div>
