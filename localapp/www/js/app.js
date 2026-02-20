@@ -422,6 +422,7 @@
   }
 
   var P48_QUALITIES = ['Purity', 'Truth', 'Praiseworthy', 'Wholesome', 'Excellence', 'Admirable', 'Peace', 'Honorable', 'Lovely'];
+  var P48_ICONS = { Purity: 'fa-heart', Truth: 'fa-check-circle', Praiseworthy: 'fa-bullhorn', Wholesome: 'fa-seedling', Excellence: 'fa-star', Admirable: 'fa-thumbs-up', Peace: 'fa-hand-peace', Honorable: 'fa-crown', Lovely: 'fa-spa' };
   var P48_QUESTIONS = {
     Purity: 'What thought or motive can you surrender to God today for greater purity?',
     Truth: 'Where do you need to align more fully with God\'s truth this week?',
@@ -439,10 +440,10 @@
     if (!container) return;
     var calendarHtml = '<div class="p48x-calendar-section" id="p48x-calendar-section">' +
       '<h4 class="p48x-calendar-title">Create a Daily Reflection Habit</h4>' +
-      '<p class="p48x-calendar-desc">Schedule recurring reflection prompts in your local time. One for each category, every day.</p>' +
+      '<p class="p48x-calendar-desc">Schedule a full day of recurring reflection prompts in your local time. You will get one for each category, every day.</p>' +
       '<div class="p48x-calendar-btns">' +
-      '<a href="' + SITE + '/prayers/google_auth.php" class="p48x-btn p48x-btn-google" target="_self">Connect Google Calendar</a>' +
-      '<button type="button" id="p48x-schedule-btn" class="p48x-btn p48x-btn-schedule">Activate Daily Schedule</button>' +
+      '<a href="' + SITE + '/prayers/google_auth.php" class="p48x-btn p48x-btn-google" target="_self"><i class="fab fa-google"></i> Connect Google Calendar</a>' +
+      '<button type="button" id="p48x-schedule-btn" class="p48x-btn p48x-btn-schedule"><i class="fas fa-calendar-plus"></i> Activate Daily Schedule</button>' +
       '</div>' +
       '<p id="p48x-google-status" class="p48x-google-status"></p>' +
       '</div>';
@@ -473,10 +474,10 @@
 
     P48_QUALITIES.forEach(function(q) {
       var btn = document.createElement('button');
-      btn.className = 'p48x-quality-btn active';
-      btn.textContent = q;
+      btn.className = 'p48x-quality-btn' + (q === 'Purity' ? ' active' : '');
       btn.dataset.quality = q;
-      if (q !== 'Purity') btn.classList.remove('active');
+      var icon = P48_ICONS[q] || 'fa-circle';
+      btn.innerHTML = '<i class="fas ' + icon + '"></i> ' + q;
       btn.addEventListener('click', function() {
         qualDiv.querySelectorAll('.p48x-quality-btn').forEach(function(b) { b.classList.remove('active'); });
         btn.classList.add('active');
