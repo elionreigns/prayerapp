@@ -176,21 +176,21 @@ You want **two iPhone apps** (Power Prayer and Complimentinator) that feel **fre
 
 ## Part 8: GitHub repo & deploy from PC (no Mac)
 
-### New GitHub project (e.g. elionreigns/prayer-authority-app)
-- **What to put in the repo:** Only the **app** and **CI** — the `power-prayer` folder (Capacitor app), HolyVibe.md, DEPLOY-FROM-PC.md, this README, and `.github/workflows` for iOS build. **Do not** put `config.php`, `public_html`, or any file that contains API keys, DB credentials, or OAuth secrets.
+### GitHub repo: elionreigns/prayerapp
+- **What’s in the repo:** The **app** (localapp/ — Capacitor app), HolyVibe.md, APP-ARCHITECTURE.md, DEPLOY-THESE-TO-LIVE.txt, deploy/app_login_status.php, and related docs. **No** config.php, API keys, DB credentials, or OAuth secrets.
 - **Public vs private:** The repo can be **public** as long as it contains **no secrets**. The app only has `SITE_URL` (e.g. `https://www.prayerauthority.com`) in `www/js/config.js`; that is not secret. All real APIs and Google OAuth run on your **server** (prayerauthority.com); the app loads login/register and tools from the site, so config never leaves the server. If you ever add site code or config templates to the repo, use **private** and keep `config.php` in `.gitignore`.
 - **Deploy from PC:** Use **Codemagic** (connect repo, configure build + signing in UI) or **GitHub Actions** (workflow in repo; add `DEVELOPER_TEAM_ID` and optional App Store Connect API key as secrets). Both run macOS in the cloud and build the .ipa; you never need a Mac. See DEPLOY-FROM-PC.md.
 
-### What’s built today vs next
-- **Main app (`real applications/power-prayer`):** Power Prayer iPhone app with **Holy of Holies** blue/gold shell (header, drawer, loading spinner). Hamburger menu: Account (Login, Register, Dashboard), Prayers (Home, Ask, Altar, Healing, Salvation, Jehoshaphat, Bank, Requests, Prayed, Forgive, Red Letters), Tools (Dream Interpreter, Biblical Counsel, Urim & Thummim, Spiritual Gifts Test, Spousal Translator, P48X Reflections, Vitamins, Battle Sword, David vs Goliath, Bible Map). **Native Red Letters** screen (fetches redletters_api.php, optional 24h cache). **App storage:** last screen and optional start path saved in localStorage; app reopens on last/view; Red Letters cache for instant/offline-ish load. Everything else loads in an iframe from the **live site**; **registration, login, and Google OAuth** are the site’s flow; **config and APIs stay on the server**. Capacitor iOS (`ios/`), localhost preview (`npm run preview` → http://localhost:3335), DEPLOY-FROM-PC, APP-ROADMAP-AND-STORE.md, DEPLOYMENT.md.
-- **Localapp (`localapp/`):** Full copy of the app with **native in-app screens** for the main tools so they don’t rely on the site UI (only on site APIs). Same shell and menu. **Native screens:** Red Letters (API + cache), Dream Interpreter (dreambot_api.php), Biblical Counsel (counsel/chatbot_api.php), Urim & Thummim (chatbot3_api.php), P48X Reflections (p48x_ajax.php), Spousal Translator (translator/chatbot_api.php), David vs Goliath (game copied into `localapp/www/games/davidvsgoliath/` — runs locally), Bible Map (iframe to site map). Prayers index and prayer forms still open in iframe (site). Same app storage (last path, Red Letters cache). Use localapp as the **App Store build** if you want the store version to have all tools built in-app; build from `localapp` with Capacitor the same way as the main app.
-- **Site:** `public_html/prayers/header.php` — CSP/frame-ancestors for app embedding, scrollbar/padding fixes so content isn’t clipped in iframe; `.htaccess` and `security_config.php` — no X-Frame-Options block so app can embed. Red Letters and other APIs have CORS or session as needed; config stays on server.
-- **App Store readiness:** Privacy policy URL (required — host on site), App Store Connect listing (description, screenshots, keywords, category, age rating, price). No API keys in app; build via Codemagic or GitHub Actions from PC. See power-prayer/APP-ROADMAP-AND-STORE.md and DEPLOYMENT.md.
-- **Next (optional):** Spiritual Gifts as native flow with save/top 3; Sign in with Apple if required; Complimentinator as second app.
+### What’s built today (meets your requirements) — **DONE**
+- **Repo:** **elionreigns/prayerapp** (this repo). **App Store build source:** `localapp/` — build from here with Codemagic (or Xcode) for iOS.
+- **What syncs with the website (iframe only):** Login, Register, Dashboard, Prayed, Requests, and **all prayer forms** (Prayers Home, Ask, Altar, Healing, Salvation, Jehoshaphat, Bank, Forgive, Red Letters link, etc.). One account; membership and prayer data stay on the site. See **APP-ARCHITECTURE.md**.
+- **What’s built into the app (native or in-app UI):** Red Letters (API + cache), Dream Interpreter, Biblical Counsel, Urim & Thummim, Spousal Translator, **P48X Reflections** (with Font Awesome icons, Google Calendar “Connect” + “Activate Daily Schedule,” warm calendar card styling, empty state “There are no entries yet”), David vs Goliath (local game), Bible Map (in-app iframe). Vitamins and Battle Sword open in-app (iframe to site). Spiritual Gifts Test opens in iframe (site). Same shell and menu; **login state:** header shows **username + green dot** when logged in; drawer shows “Signed in as [name].” (Requires **app_login_status.php** on live site — see DEPLOY-THESE-TO-LIVE.txt.)
+- **App storage:** Last path, optional start path, Red Letters cache. No API keys or secrets in repo; only SITE_URL (from app-config on your server when hosted).
+- **App Store readiness:** Repo is **pushed to GitHub** and ready for Codemagic. You still need: Apple Developer Program ($99/year), privacy policy URL on your site, App Store Connect listing (description, screenshots, etc.), then build → upload .ipa → submit. See checklist in Part 9.
+- **Next (optional, not required for this submit):** Spiritual Gifts as native flow with save/top 3; Sign in with Apple if required; Complimentinator as second app.
 
 ### Localhost: see the app before deploying
-- **Main app:** `cd real applications/power-prayer` → `npm install` → `npm run preview`. Open **http://localhost:3335** — shell, menu, native Red Letters; iframe for login, prayers, other tools.
-- **Localapp (full native tools):** From repo root, `cd localapp` → `npm install` → `npm run preview` → open **http://localhost:3336** (or open `localapp/www/index.html` in a browser). Same shell; native Dreams, Counsel, Urim, P48X, Translator, David vs Goliath (local game), Bible Map (iframe); prayers still in iframe. Use when you want the “built on our end” experience for all main tools.
+- **From this repo:** `cd localapp` → `npm install` → `npm run preview` → open the URL shown (e.g. http://localhost:3336) or open `localapp/www/index.html` in a browser. You’ll see the full shell, login state (after logging in on the site in the iframe), native Red Letters, Dreams, Counsel, Urim, P48X (with icons and calendar), Translator, David vs Goliath, Bible Map; Vitamins/Battle Sword and all prayers in iframe.
 
 ---
 
@@ -204,19 +204,33 @@ You want **two iPhone apps** (Power Prayer and Complimentinator) that feel **fre
 - **Holy of Holies / Solomon vibe**: blue & gold, sacred, futuristic but not gimmicky; smooth transitions.
 - **App Store ready**: $10 one-time; privacy policy URL; deploy from PC (Codemagic/GitHub Actions); localhost preview so you can see it before submitting.
 
-### Two app variants
-| Variant | Folder | Use case |
-|--------|--------|----------|
-| **Main app** | `real applications/power-prayer` | Shell + native Red Letters + storage/cache; everything else in iframe. **Do not change this folder** when adding experimental native screens. |
-| **Localapp** | `localapp/` | Copy of app with **native screens** for Dreams, Counsel, Urim, P48X, Translator, David vs Goliath (local), Bible Map (iframe). Same storage/cache. Use this as the **App Store build** if you want the store version to have all main tools built in-app. |
+### App variant for App Store (this repo)
+| What | Where | Use case |
+|------|--------|----------|
+| **App Store build** | `localapp/` in this repo (elionreigns/prayerapp) | Native screens for Red Letters, Dreams, Counsel, Urim, P48X (with icons + calendar), Translator, David vs Goliath, Bible Map; Vitamins/Battle Sword + prayers in iframe. Login state in header + drawer. **Build from `localapp/` with Codemagic** for iOS. See **APP-ARCHITECTURE.md** for what syncs vs what’s in-app. |
 
 ### How the app holds information
 - **On device (localStorage):** Last path, optional start path, Red Letters cache (24h). Not sent to server unless user submits a form.
 - **On server (site/APIs):** Login/session, prayer requests, journal, chatbot history, P48X entries, Spiritual Gifts results. App calls your APIs with session cookie (or token); config and keys stay in config.php.
 
-### App Store acceptance checklist
-- [ ] Apple Developer Program ($99/year).
-- [ ] Privacy policy page on your site; URL entered in App Store Connect.
-- [ ] App Store Connect: app created, description, screenshots, keywords, category, age rating, price; “App Privacy” completed.
-- [ ] Build: from `power-prayer` or `localapp` via Xcode (Mac) or Codemagic/GitHub Actions (PC); upload .ipa to App Store Connect; submit for review.
-- [ ] No API keys or secrets in the app repo; only SITE_URL in config.
+### App Store acceptance checklist (your remaining steps)
+- [ ] **Apple Developer Program** — Pay $99/year and enroll.
+- [ ] **Privacy policy** — Host a page on your site; add its URL in App Store Connect.
+- [ ] **App Store Connect** — Create the app; fill description, screenshots, keywords, category, age rating, price; complete “App Privacy.”
+- [ ] **Deploy live site files** — Upload everything in DEPLOY-THESE-TO-LIVE.txt (including **app_login_status.php**) so login state and iframe work when the app hits prayerauthority.com.
+- [ ] **Build & submit** — Connect this repo (elionreigns/prayerapp) to Codemagic; build from `localapp/`; upload .ipa to App Store Connect; submit for review.
+- [x] No API keys or secrets in the app repo; only SITE_URL from your server. **Done.**
+- [x] App requirements met: login/prayers synced with site; Red Letters, chatbots, P48X, David vs Goliath, Bible Map, Vitamins, Battle Sword in-app; P48X beautiful (icons, calendar, empty state); username + green dot when logged in. **Done.**
+
+### Requirements status — we’re done for your stated scope
+Your requirements for the **Power Prayer app** (so it’s ready for Codemagic → iOS → App Store after you pay the $99 developer fee) are **met**:
+
+| Requirement | Status |
+|-------------|--------|
+| **Login / membership synced with website** (Login, Register, Dashboard, Prayed, Requests, all prayer forms in iframe) | Done — one account; session shared. |
+| **Red Letters, Bible Map, chatbots, P48X, David vs Goliath, Vitamins, Battle Sword** in the app (not all pulled from website; built in-app or in-app view) | Done — native/in-app for Red Letters, Dreams, Counsel, Urim, Translator, P48X, David vs Goliath, Bible Map; Vitamins/Battle Sword open in-app (iframe). |
+| **P48X** looks beautiful, not barebones; **Google Calendar sync** (Connect + Activate Daily Schedule); **colors/icons** match or beat the site; **empty state** “no entries yet” not “could not load journal” | Done — Font Awesome icons on qualities + calendar buttons; warm calendar card; empty copy and error copy updated. |
+| **Logged-in state in app:** **username at top + green dot**; drawer shows **“Signed in as [name]”** | Done — `app_login_status.php` on site; header and drawer wired. |
+| **Repo ready for Codemagic** so you can build iOS and submit to App Store | Done — elionreigns/prayerapp pushed; build from `localapp/`. |
+
+**Nothing else is required in the codebase** for this scope. Your remaining steps are: pay Apple $99, deploy the files in DEPLOY-THESE-TO-LIVE.txt (including `app_login_status.php`) to your live site, set up App Store Connect (privacy URL, listing, etc.), then run the build in Codemagic and submit the .ipa.
