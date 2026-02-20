@@ -14,4 +14,16 @@ To use the APP SHELL on your phone (e.g. at the beach) in the browser:
 - Upload the CONTENTS of localapp/www/ (index.html, js/, css/, games/) to your live site's public_html/app/.
 - On the live server, add <base href="/app/"> inside <head> of public_html/app/index.html so assets load at https://www.prayerauthority.com/app/
 - On your phone, open: https://www.prayerauthority.com/app/
-Full steps: HOST-APP-SHELL-FOR-PHONE.md
+The app shell includes Privacy Policy and Contact in the drawer (Legal & Support). Full steps: HOST-APP-SHELL-FOR-PHONE.md
+
+---
+Site files for Privacy + Demo account (upload to live so App Review can use dem0/0med and privacy URL works):
+- public_html/prayers/privacy.php         --> public_html/prayers/
+- public_html/prayers/db_connect.php      --> public_html/prayers/
+- public_html/prayers/dreams.php          --> public_html/prayers/
+- public_html/prayers/urim2.php           --> public_html/prayers/
+- public_html/counsel/index.php           --> public_html/counsel/
+- public_html/translator/index.php        --> public_html/translator/
+One-time: run create_demo_user.php on the server to create dem0/0med (then delete create_demo_user.php for security).
+
+Before submitting to the App Store: see APP-STORE-SUBMISSION.md (what to send in) and BEFORE-YOU-SUBMIT.md (checklist).

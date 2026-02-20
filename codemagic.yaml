@@ -1,0 +1,68 @@
+# Power Prayer iOS build — Codemagic
+# Repo: elionreigns/prayerapp. Set working directory to "localapp" in Codemagic UI,
+# or leave empty; this file uses APP_DIR so it works from repo root.
+workflows:
+  ios-power-prayer:
+    name: Power Prayer iOS
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.prayerauthority.powerprayer
+      vars:
+        APP_DIR: localapp
+        XCODE_WORKSPACE: "App.xcworkspace"
+        XCODE_SCHEME: "App"
+        # Set in Codemagic UI or here: App Store Connect → Your App → General → App Information → Apple ID
+        APP_STORE_APP_ID: "REPLACE_WITH_YOUR_APP_ID"
+        node: v20
+        xcode: latest
+        cocoapods: default
+    integrations:
+      app_store_connect: codemagic  # Name of your App Store Connect API key integration in Codemagic
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+    scripts:
+      - name: Install dependencies
+        script: |
+          cd $CM_BUILD_DIR/$APP_DIR
+          npm ci
+      - name: Sync Capacitor iOS
+        script: |
+          cd $CM_BUILD_DIR/$APP_DIR
+          npx cap sync ios
+      - name: Install CocoaPods
+        script: |
+          cd $CM_BUILD_DIR/$APP_DIR/ios/App
+          pod install
+      - name: Set up code signing
+        script: |
+          cd $CM_BUILD_DIR/$APP_DIR/ios/App
+          xcode-project use-profiles
+      - name: Increment build number (optional)
+        script: |
+          cd $CM_BUILD_DIR/$APP_DIR/ios/App
+          if [ -n "$APP_STORE_APP_ID" ] && [ "$APP_STORE_APP_ID" != "REPLACE_WITH_YOUR_APP_ID" ]; then
+            LATEST=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APP_ID" 2>/dev/null || echo "0")
+            agvtool new-version -all $(($LATEST + 1))
+          else
+            agvtool new-version -all $BUILD_NUMBER
+          fi
+      - name: Build IPA
+        script: |
+          cd $CM_BUILD_DIR/$APP_DIR/ios/App
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - localapp/ios/App/build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: false  # Set true when ready to submit to App Store after TestFlight

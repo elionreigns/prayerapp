@@ -14,12 +14,12 @@ This doc summarizes **Apple’s App Store Review Guidelines** as they apply to t
 
 ## Before You Submit (Apple’s list)
 
-- [ ] **Demo account:** If the app includes login, provide an **active demo account** (and/or turn on backend) so App Review can sign in and use the app. If you can’t share credentials, use a built-in demo mode and get prior approval.
+- [ ] **Demo account:** If the app includes login, provide an **active demo account** so App Review can sign in. In App Store Connect → Your App → App Review Information, set “Sign-in required” to **Yes** and in **Notes** paste the demo **email** and **password** (and a one-line note that the app uses the website login). Create the account on prayerauthority.com and keep it working during review. **Full step-by-step:** see **BEFORE-YOU-SUBMIT.md**.
 - [ ] **Backend live:** Ensure prayerauthority.com and all APIs (login, chatbots, P48X, etc.) are **live and reachable** during review.
 - [ ] **No placeholders:** Remove placeholder text, empty pages, and non-functional URLs from the build and metadata.
 - [ ] **Test on device:** Test the app on a real device for crashes and obvious bugs before submitting.
 - [ ] **Metadata complete:** App name, description, screenshots, and privacy info must be accurate and complete in App Store Connect.
-- [ ] **Contact info:** Your support/contact URL and App Review contact details must be up to date.
+- [ ] **Contact info:** Your support/contact URL and App Review contact details must be up to date. The app includes a **Privacy Policy** and **Contact** link in the drawer (Legal & Support).
 
 ---
 
@@ -70,7 +70,7 @@ Apple rejects apps that are “not sufficiently different from a mobile browsing
 
 - **Consent:** Do not collect or share personal data without permission. Do not require users to enable tracking, push, or location just to use the app.
 
-If you don’t already have a privacy policy URL on prayerauthority.com, add one and link it in the app (e.g. footer or drawer) and in App Store Connect.
+**Done for Power Prayer:** Privacy policy URL is https://www.prayerauthority.com/prayers/privacy.php (updated for the app and Apple). The app drawer includes **Privacy Policy** and **Contact** under “Legal & Support.” Set the same URL in App Store Connect as the app’s Privacy Policy URL.
 
 ---
 
@@ -85,10 +85,10 @@ If you don’t already have a privacy policy URL on prayerauthority.com, add one
 
 | Item | Action |
 |------|--------|
-| Demo account | Provide working login credentials (or approved demo mode) in App Review notes. |
+| Demo account | Create account on site; put email + password in App Store Connect → App Review Information → Notes. See BEFORE-YOU-SUBMIT.md. |
 | Backend | Ensure prayerauthority.com and APIs are live during review. |
-| Privacy policy | Publish policy URL; add link in app and in App Store Connect. |
-| Support/contact | Add Support URL and contact in App Store Connect and in the app. |
+| Privacy policy | URL: https://www.prayerauthority.com/prayers/privacy.php. Link in app (drawer) ✓; set same URL in App Store Connect. |
+| Support/contact | Set Support URL in App Store Connect. Contact link in app (drawer) ✓. |
 | 4.2 (minimum functionality) | In notes, describe native shell, in-app tools (chatbots, P48X, Red Letters, etc.), not “just a website.” |
 | Login options | If using Google Sign-In, keep email/password (or equivalent) as an option. |
 | Metadata | App name, description, screenshots match the actual experience. |

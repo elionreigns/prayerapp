@@ -215,12 +215,13 @@ You want **two iPhone apps** (Power Prayer and Complimentinator) that feel **fre
 
 ### App Store acceptance checklist (your remaining steps)
 - [ ] **Apple Developer Program** — Pay $99/year and enroll.
-- [ ] **Privacy policy** — Host a page on your site; add its URL in App Store Connect.
-- [ ] **App Store Connect** — Create the app; fill description, screenshots, keywords, category, age rating, price; complete “App Privacy.”
-- [ ] **Deploy live site files** — Upload everything in DEPLOY-THESE-TO-LIVE.txt (including **app_login_status.php**) so login state and iframe work when the app hits prayerauthority.com.
-- [ ] **Build & submit** — Connect this repo (elionreigns/prayerapp) to Codemagic; build from `localapp/`; upload .ipa to App Store Connect; submit for review.
+- [ ] **Privacy policy** — URL https://www.prayerauthority.com/prayers/privacy.php; set in App Store Connect. Link in app (drawer → Legal & Support) is already included.
+- [x] **Demo account for App Review** — **Done.** User **dem0** / password **0med** (created via create_demo_user.php); full access to all chatbots (no secret codes). Put dem0 / 0med in App Store Connect → App Review Information → Notes. Exact text: **APP-STORE-SUBMISSION.md**.
+- [ ] **App Store Connect** — Create the app; fill description, screenshots, keywords, category, age rating, price; complete App Privacy; set Support URL. Use **APP-STORE-SUBMISSION.md** for what to send (demo, privacy URL, support URL, notes).
+- [ ] **Deploy live site files** — Upload everything in DEPLOY-THESE-TO-LIVE.txt (including **app_login_status.php** and the site files listed there for privacy + demo bypass). One-time: run create_demo_user.php to create dem0 (then delete that file).
+- [ ] **Build & submit** — Connect this repo to **Codemagic** (free tier: 500 build min/month — no cost for typical use). Build from `localapp/`; upload .ipa; complete **BEFORE-YOU-SUBMIT.md**; submit. See **CODEMAGIC-SETUP.md** and **APP-STORE-SUBMISSION.md**.
 - [x] No API keys or secrets in the app repo; only SITE_URL from your server. **Done.**
-- [x] App requirements met: login/prayers synced with site; Red Letters, chatbots, P48X, David vs Goliath, Bible Map, Vitamins, Battle Sword in-app; P48X beautiful (icons, calendar, empty state); username + green dot when logged in. **Done.**
+- [x] App requirements met: login/prayers synced with site; Red Letters, chatbots, P48X, David vs Goliath, Bible Map, Vitamins, Battle Sword in-app; P48X beautiful (icons, calendar, empty state); username + green dot when logged in; Privacy Policy + Contact in drawer; demo account with full chatbot access. **Done.**
 
 ### Requirements status — we’re done for your stated scope
 Your requirements for the **Power Prayer app** (so it’s ready for Codemagic → iOS → App Store after you pay the $99 developer fee) are **met**:
@@ -233,6 +234,10 @@ Your requirements for the **Power Prayer app** (so it’s ready for Codemagic �
 | **Logged-in state in app:** **username at top + green dot**; drawer shows **“Signed in as [name]”** | Done — `app_login_status.php` on site; header and drawer wired. |
 | **Repo ready for Codemagic** so you can build iOS and submit to App Store | Done — elionreigns/prayerapp pushed; build from `localapp/`. |
 
-**Nothing else is required in the codebase** for this scope. Your remaining steps are: pay Apple $99, deploy the files in DEPLOY-THESE-TO-LIVE.txt (including `app_login_status.php`) to your live site, set up App Store Connect (privacy URL, listing, etc.), then run the build in Codemagic and submit the .ipa.
+**Nothing else is required in the codebase** for this scope. Your remaining steps: pay Apple $99; deploy site files (DEPLOY-THESE-TO-LIVE.txt); set up App Store Connect using **APP-STORE-SUBMISSION.md** (demo dem0/0med, privacy URL, support URL); connect Codemagic to this repo → build → upload .ipa → submit.
+
+**Codemagic:** Free tier = 500 build minutes/month — **no cost** for typical use. After signup: connect GitHub (elionreigns/prayerapp) → add Apple integration (App Store Connect API key) → code signing (bundle id com.prayerauthority.powerprayer) → start build → get .ipa. See **CODEMAGIC-SETUP.md**.
+
+**App folder on site:** To make https://www.prayerauthority.com/app/ match the iOS build, upload **contents of localapp/www/** to **public_html/app/** and add `<base href="/app/">` in index.html on the server.
 
 For **how login and chatbots work** when someone downloads the app (same session, same account, no “disconnect” from the website), see **APP-LOGIN-AND-CHATBOT-FLOW.md**.

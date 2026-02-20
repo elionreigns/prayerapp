@@ -10,6 +10,8 @@ Full Power Prayer app with native in-app screens that cross-sync with [Prayer Au
 - **APP-ARCHITECTURE.md** — What loads from the site (iframe) vs what’s built into the app.
 - **WHERE-APP-FILES-LIVE.md** — Where the app files live: repo (Codemagic/iOS) vs website `/app/` (browser).
 - **APP-STORE-COMPLIANCE.md** — Apple App Store rules checklist (4.2 minimum functionality, privacy, login, etc.) so you can ensure the app is accepted.
+- **BEFORE-YOU-SUBMIT.md** — **Use this right before submitting:** demo account (what it is, where to put it in App Review notes), privacy/support, and full readiness checklist so the app is 100% ready for review.
+- **CODEMAGIC-SETUP.md** — How to connect this repo to Codemagic, build the iOS app, and meet Apple requirements. Use **codemagic.yaml** in the repo root for the build.
 - **HolyVibe.md** — Single source of truth; main vs localapp; data flow; App Store checklist.
 - **HOST-APP-SHELL-FOR-PHONE.md** — Deploy the web app to `public_html/app/` so users can open it on their phone.
 - **ENV-GITHUB-APPSTORE.md** — No env vars in the app; server config; what to push; App Store steps.
