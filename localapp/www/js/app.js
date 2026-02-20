@@ -11,7 +11,8 @@
     '/prayers/p48x.php': 'native-p48x',
     '/translator/': 'native-translator',
     '/prayers/games/davidvsgoliath/': 'native-david',
-    '/prayers/map/': 'native-biblemap'
+    '/prayers/map/': 'native-biblemap',
+    '/prayers/spiritual_gifts_test.php': 'native-spiritualgifts'
   };
 
   var el = {
@@ -29,12 +30,14 @@
     nativeDavid: document.getElementById('native-david'),
     davidFrame: document.getElementById('david-frame'),
     nativeBiblemap: document.getElementById('native-biblemap'),
-    biblemapFrame: document.getElementById('biblemap-frame')
+    biblemapFrame: document.getElementById('biblemap-frame'),
+    nativeSpiritualgifts: document.getElementById('native-spiritualgifts'),
+    spiritualgiftsFrame: document.getElementById('spiritualgifts-frame')
   };
 
   var allNativeViews = [
     el.nativeRedLetters, el.nativeDreams, el.nativeCounsel, el.nativeUrim,
-    el.nativeP48x, el.nativeTranslator, el.nativeDavid, el.nativeBiblemap
+    el.nativeP48x, el.nativeTranslator, el.nativeDavid, el.nativeBiblemap, el.nativeSpiritualgifts
   ].filter(Boolean);
 
   function openDrawer() {
@@ -74,9 +77,7 @@
 
   function backLinkHandler(e) {
     e.preventDefault();
-    showIframe();
-    loadUrl('/prayers/login.php');
-    closeDrawer();
+    openDrawer();
   }
 
   function escapeHtml(s) {
@@ -112,6 +113,7 @@
       else if (viewId === 'native-translator') loadTranslatorInApp();
       else if (viewId === 'native-david') loadDavidInApp();
       else if (viewId === 'native-biblemap') loadBibleMapInApp();
+      else if (viewId === 'native-spiritualgifts') loadSpiritualGiftsInApp();
       return;
     }
     currentPath = path;
@@ -193,33 +195,67 @@
     if (cached && cached.success && cached.data) renderRedLetters(container, cached);
 
     var apiUrl = SITE + '/prayers/redletters_api.php';
-    fetch(apiUrl, { credentials: 'include' })
-      .then(function(r) { return r.json(); })
+    function showRedLettersError(msg) {
+      container.innerHTML = '<div class="native-view-header">Red Letters</div><a href="#" class="back-to-iframe rl-back">← Back</a><div class="rl-error">' + msg + ' <a href="' + SITE + '/prayers/redletters.php" target="_blank">Open on website</a></div>';
+      var b = container.querySelector('.rl-back');
+      if (b) b.addEventListener('click', backLinkHandler);
+    }
+    function remapRedLettersRaw(raw) {
+      if (!raw || typeof raw !== 'object') return null;
+      return {
+        success: true,
+        data: {
+          'Melchizedek': raw.Melchizedek || [],
+          'Angel of the LORD': (raw.Angel_of_the_LORD || []).concat(raw.Pre_Incarnate_Christophanies || []),
+          'Matthew': raw['Gospel of Matthew'] || [],
+          'Mark': raw['Gospel of Mark'] || [],
+          'Luke': raw['Gospel of Luke'] || [],
+          'John': raw['Gospel of John'] || [],
+          'Revelation': raw.Glorified || []
+        },
+        meta: { version: 'WEB', attribution: 'World English Bible (WEB) is in the public domain.' }
+      };
+    }
+    function tryBundledRedLetters() {
+      fetch('data/redletters_web.json', { credentials: 'omit' })
+        .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+        .then(function(raw) {
+          var res = remapRedLettersRaw(raw);
+          if (res && res.data) {
+            if (window.APP_STORAGE) window.APP_STORAGE.setRedLettersCache(res);
+            renderRedLetters(container, res);
+          } else showRedLettersError('Could not load content.');
+        })
+        .catch(function() { showRedLettersError('Network error.'); });
+    }
+    fetch(apiUrl, { credentials: 'omit', mode: 'cors' })
+      .then(function(r) {
+        var ct = (r.headers.get('content-type') || '').toLowerCase();
+        if (!r.ok) {
+          return r.text().then(function() { return { success: false }; });
+        }
+        if (ct.indexOf('application/json') !== -1) return r.json();
+        return r.text().then(function() { return { success: false }; });
+      })
       .then(function(res) {
         if (window.APP_STORAGE && res && res.success && res.data) window.APP_STORAGE.setRedLettersCache(res);
-        if (!res.success || !res.data) {
-          if (!cached || !cached.data) {
-            container.innerHTML = '<div class="native-view-header">Red Letters</div><a href="#" class="back-to-iframe rl-back">← Back</a><div class="rl-error">Could not load content. <a href="' + SITE + '/prayers/redletters.php" target="_blank">Open on website</a></div>';
-            var b2 = container.querySelector('.rl-back');
-            if (b2) b2.addEventListener('click', backLinkHandler);
-          }
+        if (!res || !res.success || !res.data) {
+          if (cached && cached.data) return;
+          tryBundledRedLetters();
           return;
         }
         renderRedLetters(container, res);
       })
       .catch(function() {
-        if (!cached || !cached.data) {
-          container.innerHTML = '<div class="native-view-header">Red Letters</div><a href="#" class="back-to-iframe rl-back">← Back</a><div class="rl-error">Network error. <a href="' + SITE + '/prayers/redletters.php" target="_blank">Open on website</a></div>';
-          var b4 = container.querySelector('.rl-back');
-          if (b4) b4.addEventListener('click', backLinkHandler);
-        }
+        if (cached && cached.data) return;
+        tryBundledRedLetters();
       });
   }
 
   function loadDreamsInApp() {
     var container = el.nativeDreams;
     if (!container) return;
-    container.innerHTML = '<div class="native-view-header">Dream Interpreter</div><a href="#" class="back-to-iframe native-back-link">← Back to menu</a><div class="native-chat-wrap"><div class="native-chat-messages" id="dreams-msgs"><div class="rl-loading">Loading…</div></div><form class="native-chat-form" id="dreams-form"><textarea id="dreams-input" placeholder="Describe your dream or ask a follow-up…" rows="3"></textarea><button type="submit" id="dreams-send">Interpret / Send</button></form></div>';
+    container.innerHTML = '<div class="native-view-header">Dream Interpreter</div><a href="#" class="back-to-iframe native-back-link">← Back to menu</a><div class="native-chat-card"><div class="native-chat-header"><div class="chat-card-title"><i class="fas fa-moon"></i> Dreamstone</div><p class="native-chat-subtitle">Connect with the Spirit for biblical dream interpretation.</p></div><div class="native-chat-wrap"><div class="native-chat-messages" id="dreams-msgs"><div class="rl-loading">Loading…</div></div><div class="dreams-options-row"><label class="dreams-opt-label"><span>Emotional Tone</span><select id="dreams-emotional-tone"><option value="">Select…</option><option value="peaceful">Peaceful & Calm</option><option value="fearful">Fearful & Anxious</option><option value="joyful">Joyful & Exciting</option><option value="confused">Confused & Unclear</option><option value="urgent">Urgent & Important</option><option value="mysterious">Mysterious & Spiritual</option><option value="anxious">Anxious</option><option value="hopeful">Hopeful</option><option value="overwhelming">Overwhelming</option><option value="none">No specific tone</option></select></label><label class="dreams-opt-label"><span>Colors</span><select id="dreams-colors"><option value="">Select…</option><option value="red">Red</option><option value="blue">Blue</option><option value="white">White</option><option value="green">Green</option><option value="yellow">Yellow</option><option value="purple">Purple</option><option value="gold">Gold</option><option value="black">Black</option><option value="silver">Silver</option><option value="orange">Orange</option><option value="pink">Pink</option><option value="brown">Brown</option><option value="none">None</option></select></label><label class="dreams-opt-label"><span>Numbers</span><select id="dreams-numbers"><option value="">Select…</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="40">40</option><option value="none">None</option></select></label><label class="dreams-opt-label"><span>Dream Type</span><select id="dreams-type"><option value="">Select…</option><option value="prophetic">Prophetic</option><option value="warning">Warning</option><option value="encouragement">Encouragement</option><option value="instruction">Instruction</option><option value="revelation">Revelation</option><option value="spiritual_warfare">Spiritual Warfare</option><option value="healing">Healing</option><option value="ministry">Ministry</option><option value="deliverance">Deliverance</option><option value="covenant">Covenant</option><option value="judgment">Judgment</option><option value="restoration">Restoration</option><option value="commission">Commission</option><option value="not_sure">Not sure</option></select></label></div><div class="native-chat-controls"><button type="button" class="new-dream-btn" id="dreams-new"><i class="fas fa-plus"></i> New dream</button><button type="button" class="clear-btn" id="dreams-clear"><i class="fas fa-eraser"></i> Clear</button><button type="button" class="save-session-btn" id="dreams-save-session"><i class="fas fa-archive"></i> Save session</button></div><form class="native-chat-form" id="dreams-form"><textarea id="dreams-input" placeholder="Describe your dream or ask a follow-up…" rows="3"></textarea><button type="submit" id="dreams-send" class="primary-chat-btn"><i class="fas fa-magic"></i> Interpret / Send</button></form></div></div>';
     var dreamsBack = container.querySelector('.back-to-iframe, .native-back-link');
     if (dreamsBack) dreamsBack.addEventListener('click', backLinkHandler);
     var msgs = document.getElementById('dreams-msgs');
@@ -231,37 +267,115 @@
     function appendMsg(role, text) {
       var wrap = document.createElement('div');
       wrap.className = 'native-chat-msg ' + role;
-      wrap.innerHTML = '<div class="msg-text">' + escapeHtml(text).replace(/\n/g, '<br>') + '</div><div class="msg-meta">' + (role === 'user' ? 'You' : 'Dreamstone') + '</div>';
+      wrap.innerHTML = '<div class="msg-text">' + (role === 'user' ? escapeHtml(text).replace(/\n/g, '<br>') : text) + '</div><div class="msg-meta">' + (role === 'user' ? 'You' : 'Dreamstone') + '</div>';
       msgs.appendChild(wrap);
       msgs.scrollTop = msgs.scrollHeight;
     }
 
     function setLoading(on) {
       sendBtn.disabled = on;
-      if (on) msgs.innerHTML = msgs.innerHTML + '<div class="rl-loading">Thinking…</div>';
-      else {
-        var load = msgs.querySelector('.rl-loading');
-        if (load) load.remove();
-      }
+      if (on) { var l = document.createElement('div'); l.className = 'rl-loading'; l.textContent = 'Thinking…'; msgs.appendChild(l); }
+      else { var load = msgs.querySelector('.rl-loading'); if (load) load.remove(); }
       msgs.scrollTop = msgs.scrollHeight;
     }
+
+    function saveDreamsHistory() {
+      if (chatHistory.length === 0) return;
+      var formData = new FormData();
+      formData.append('action', 'save_history');
+      formData.append('history', JSON.stringify(chatHistory));
+      fetch(SITE + '/prayers/dreambot_api.php', { method: 'POST', body: formData, credentials: 'include' }).then(function(r) { return r.json(); }).catch(function() {});
+    }
+
+    function showGreeting() {
+      var defaultGreeting = 'Welcome. Describe your dream and I will offer a biblical interpretation.';
+      appendMsg('assistant', defaultGreeting);
+      chatHistory.push({ role: 'assistant', content: defaultGreeting });
+    }
+
+    document.getElementById('dreams-new').addEventListener('click', function() {
+      msgs.innerHTML = '';
+      chatHistory = [];
+      fetch(SITE + '/prayers/dreambot_api.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'action=generate_greeting&username=',
+        credentials: 'include'
+      }).then(function(r) { return r.json(); })
+        .then(function(res) {
+          var greeting = (res.success && res.greeting) ? res.greeting : 'Welcome. Describe your dream and I will offer a biblical interpretation.';
+          appendMsg('assistant', greeting);
+          chatHistory.push({ role: 'assistant', content: greeting });
+        })
+        .catch(function() { showGreeting(); });
+    });
+    document.getElementById('dreams-clear').addEventListener('click', function() {
+      msgs.innerHTML = '';
+      chatHistory = [];
+      showGreeting();
+    });
+    document.getElementById('dreams-save-session').addEventListener('click', function() {
+      if (chatHistory.length === 0) return;
+      var btn = document.getElementById('dreams-save-session');
+      var origText = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+      btn.disabled = true;
+      var formData = new FormData();
+      formData.append('action', 'save_history');
+      formData.append('history', JSON.stringify(chatHistory));
+      fetch(SITE + '/prayers/dreambot_api.php', { method: 'POST', body: formData, credentials: 'include' })
+        .then(function(r) { return r.json(); })
+        .then(function() {
+          btn.innerHTML = '<i class="fas fa-check"></i> Saved';
+          btn.disabled = false;
+          setTimeout(function() { btn.innerHTML = origText; }, 2000);
+        })
+        .catch(function() {
+          btn.innerHTML = origText;
+          btn.disabled = false;
+        });
+    });
 
     fetch(SITE + '/prayers/dreambot_api.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: 'action=generate_greeting&username=',
+      body: 'action=load_history',
       credentials: 'include'
     }).then(function(r) { return r.json(); })
       .then(function(res) {
         var load = msgs.querySelector('.rl-loading');
         if (load) load.remove();
-        if (res.success && res.greeting) appendMsg('assistant', res.greeting);
-        else appendMsg('assistant', 'I am the Dreamstone, ready to interpret your dreams. Describe what you saw in your dream.');
+        if (res.success && res.history && Array.isArray(res.history) && res.history.length > 0) {
+          res.history.forEach(function(entry) {
+            var role = (entry.type || entry.role || 'assistant');
+            var content = entry.content || entry.text || '';
+            if (!content) return;
+            chatHistory.push({ role: role, content: content });
+            appendMsg(role === 'user' ? 'user' : 'assistant', content);
+          });
+        } else {
+          fetch(SITE + '/prayers/dreambot_api.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'action=generate_greeting&username=',
+            credentials: 'include'
+          }).then(function(r2) { return r2.json(); })
+            .then(function(res2) {
+              var greeting = (res2.success && res2.greeting) ? res2.greeting : 'Welcome. Describe your dream and I will offer a biblical interpretation.';
+              appendMsg('assistant', greeting);
+              chatHistory.push({ role: 'assistant', content: greeting });
+            })
+            .catch(function() {
+              appendMsg('assistant', 'Welcome. Describe your dream and I will offer a biblical interpretation.');
+              chatHistory.push({ role: 'assistant', content: 'Welcome. Describe your dream and I will offer a biblical interpretation.' });
+            });
+        }
       })
       .catch(function() {
         var load = msgs.querySelector('.rl-loading');
         if (load) load.remove();
         appendMsg('assistant', 'Welcome. Describe your dream and I will offer a biblical interpretation.');
+        chatHistory.push({ role: 'assistant', content: 'Welcome. Describe your dream and I will offer a biblical interpretation.' });
       });
 
     form.addEventListener('submit', function(e) {
@@ -276,7 +390,16 @@
       var isFirst = chatHistory.filter(function(m) { return m.role === 'user'; }).length === 1;
       var body;
       if (isFirst) {
-        body = 'action=interpret&description=' + encodeURIComponent(text) + '&emotional_tone=&dream_type=&numbers=&colors=&user_response=&chat_history=' + encodeURIComponent(JSON.stringify(chatHistory));
+        var emotionalToneEl = document.getElementById('dreams-emotional-tone');
+        var colorsEl = document.getElementById('dreams-colors');
+        var numbersEl = document.getElementById('dreams-numbers');
+        var typeEl = document.getElementById('dreams-type');
+        function dreamOpt(v) { return (!v || v === 'none' || v === 'not_sure') ? '' : v; }
+        var emotionalTone = dreamOpt(emotionalToneEl ? emotionalToneEl.value : '');
+        var dreamType = dreamOpt(typeEl ? typeEl.value : '');
+        var numbers = dreamOpt(numbersEl ? numbersEl.value : '');
+        var colors = dreamOpt(colorsEl ? colorsEl.value : '');
+        body = 'action=interpret&description=' + encodeURIComponent(text) + '&emotional_tone=' + encodeURIComponent(emotionalTone) + '&dream_type=' + encodeURIComponent(dreamType) + '&numbers=' + encodeURIComponent(numbers) + '&colors=' + encodeURIComponent(colors) + '&user_response=&chat_history=' + encodeURIComponent(JSON.stringify(chatHistory));
       } else {
         body = 'action=chat&message=' + encodeURIComponent(text) + '&chat_history=' + encodeURIComponent(JSON.stringify(chatHistory)) + '&user_name=Dreamer';
       }
@@ -298,18 +421,38 @@
           else reply = (typeof res === 'string') ? res : 'Interpretation received.';
           appendMsg('assistant', reply);
           chatHistory.push({ role: 'assistant', content: reply });
+          saveDreamsHistory();
         })
-        .catch(function(err) {
+        .catch(function() {
           setLoading(false);
           appendMsg('assistant', 'Network or server error. Try again or open Dream Interpreter on the website.');
         });
     });
   }
 
+  var COUNSELOR_OPTIONS = [
+    { value: 'all', label: 'All' },
+    { value: 'nathan', label: 'Nathan' },
+    { value: 'ahitophel_loyal', label: 'Ahitophel' },
+    { value: 'jehoshaphat', label: 'Jehoshaphat' },
+    { value: 'daniel', label: 'Daniel' },
+    { value: 'elders_of_israel', label: 'Elders' },
+    { value: 'king_solomon', label: 'Solomon' },
+    { value: 'jesus_christ_yeshua', label: 'Jesus' },
+    { value: 'moses', label: 'Moses' },
+    { value: 'enoch', label: 'Enoch' },
+    { value: 'john_the_apostle', label: 'John' },
+    { value: 'paul_the_apostle', label: 'Paul' },
+    { value: 'peter_the_apostle', label: 'Peter' }
+  ];
+
   function loadCounselInApp() {
     var container = el.nativeCounsel;
     if (!container) return;
-    container.innerHTML = '<div class="native-view-header">Biblical Counsel</div><a href="#" class="back-to-iframe native-back-link">← Back to menu</a><div class="native-chat-wrap"><div class="native-chat-messages" id="counsel-msgs"></div><div class="native-chat-form"><p class="native-auth-msg" id="counsel-auth-msg" style="display:none;"></p><textarea id="counsel-query" placeholder="Describe your situation and the victory you seek…" rows="4"></textarea><button type="button" id="counsel-send">Ask the Council</button></div></div>';
+    var toggleHtml = COUNSELOR_OPTIONS.map(function(o, i) {
+      return '<label class="counsel-toggle-label"><input type="radio" name="counselor-selection" value="' + escapeHtml(o.value) + '"' + (i === 0 ? ' checked' : '') + '><span class="toggle-text">' + escapeHtml(o.label) + '</span></label>';
+    }).join('');
+    container.innerHTML = '<div class="native-view-header">Biblical Counsel</div><a href="#" class="back-to-iframe native-back-link">← Back to menu</a><div class="native-chat-card"><div class="native-chat-header"><div class="chat-card-title"><i class="fas fa-users"></i> The Council of Twelve</div><p class="native-chat-subtitle">In an abundance of counselors there is victory. — Proverbs 24:6</p></div><div class="native-chat-wrap"><div class="counsel-toggles-wrap"><span class="counsel-toggles-title">Choose counselor:</span><div class="counsel-personas">' + toggleHtml + '</div></div><div class="native-chat-messages" id="counsel-msgs"></div><div class="native-chat-form"><p class="native-auth-msg" id="counsel-auth-msg" style="display:none;"></p><textarea id="counsel-query" placeholder="Describe your situation and the victory you seek…" rows="4"></textarea><button type="button" id="counsel-send" class="primary-chat-btn"><i class="fas fa-gavel"></i> Ask the Council</button></div></div></div>';
     var counselBack = container.querySelector('.back-to-iframe, .native-back-link');
     if (counselBack) counselBack.addEventListener('click', backLinkHandler);
     var msgs = document.getElementById('counsel-msgs');
@@ -317,22 +460,34 @@
     var sendBtn = document.getElementById('counsel-send');
     var authMsg = document.getElementById('counsel-auth-msg');
 
+    msgs.innerHTML = '<div class="native-chat-msg initial-greeting"><div class="msg-text">The council gathers in the great hall. Stone pillars rise into the shadows, torches flicker, casting long shadows on the walls. Twelve of history\'s wisest advisors take their seats around the great table. Their eyes turn to you, expectant. They are here to provide counsel for your victory. What is the nature of the situation you face?</div></div>';
+
+    function getSelectedPersonas() {
+      var radio = container.querySelector('input[name="counselor-selection"]:checked');
+      return radio ? [radio.value] : ['all'];
+    }
+
     sendBtn.addEventListener('click', function() {
       var query = (queryEl.value || '').trim();
       if (!query) return;
-      msgs.innerHTML = '<div class="rl-loading">The council is deliberating…</div>';
+      var userHtml = '<div class="native-chat-msg user"><div class="msg-text">' + escapeHtml(query).replace(/\n/g, '<br>') + '</div></div>';
+      msgs.insertAdjacentHTML('beforeend', userHtml);
+      msgs.insertAdjacentHTML('beforeend', '<div class="rl-loading">The council is deliberating…</div>');
+      queryEl.value = '';
       sendBtn.disabled = true;
+      var personas = getSelectedPersonas();
+      var comprehensiveMode = personas.length === 1 && personas[0] !== 'all';
       var formData = new FormData();
       formData.append('query', query);
-      formData.append('personas', '["all"]');
-      formData.append('comprehensive_mode', 'false');
+      formData.append('personas', JSON.stringify(personas));
+      formData.append('comprehensive_mode', comprehensiveMode);
       fetch(SITE + '/counsel/chatbot_api.php', {
         method: 'POST',
         body: formData,
         credentials: 'include'
       }).then(function(r) {
         if (r.status === 401) {
-          msgs.innerHTML = '';
+          msgs.querySelector('.rl-loading').remove();
           authMsg.style.display = 'block';
           authMsg.innerHTML = 'Please <a href="' + SITE + '/prayers/login.php" target="_blank">log in on the website</a> to use Biblical Counsel.';
           sendBtn.disabled = false;
@@ -341,12 +496,12 @@
         return r.json();
       }).then(function(data) {
         sendBtn.disabled = false;
-        if (!data) return;
         var load = msgs.querySelector('.rl-loading');
         if (load) load.remove();
+        if (!data) return;
         if (data.counsel) {
           var html = '';
-          for (var name in data.counsel) html += '<div class="native-chat-msg assistant"><div class="msg-text"><strong>' + escapeHtml(name) + '</strong><br>' + escapeHtml(data.counsel[name]).replace(/\n/g, '<br>') + '</div></div>';
+          for (var name in data.counsel) html += '<div class="native-chat-msg assistant counsel-response"><div class="counselor-title">' + escapeHtml(name) + '</div><div class="msg-text">' + escapeHtml(data.counsel[name]).replace(/\n/g, '<br>') + '</div></div>';
           if (data.follow_up) html += '<div class="native-chat-msg assistant"><div class="msg-text">' + escapeHtml(data.follow_up) + '</div></div>';
           msgs.insertAdjacentHTML('beforeend', html);
         } else msgs.insertAdjacentHTML('beforeend', '<div class="rl-error">No counsel returned.</div>');
@@ -356,6 +511,7 @@
         var load = msgs.querySelector('.rl-loading');
         if (load) load.remove();
         msgs.insertAdjacentHTML('beforeend', '<div class="rl-error">Network error. Log in on the website if needed.</div>');
+        msgs.scrollTop = msgs.scrollHeight;
       });
     });
   }
@@ -363,28 +519,121 @@
   function loadUrimInApp() {
     var container = el.nativeUrim;
     if (!container) return;
-    container.innerHTML = '<div class="native-view-header">Urim & Thummim</div><a href="#" class="back-to-iframe native-back-link">← Back to menu</a><div class="native-chat-wrap"><div class="native-chat-messages" id="urim-msgs"></div><form class="native-chat-form" id="urim-form"><textarea id="urim-input" placeholder="Ask your question…" rows="3"></textarea><button type="submit" id="urim-send">Seek the Oracle</button></form></div>';
+    var urimTogglesHtml = '<div class="urim-toggles-wrap"><span class="urim-toggles-title">Sources:</span><div class="urim-toggles">' +
+      '<button type="button" class="urim-toggle-btn active" data-filter="amplified">Amplified Bible</button>' +
+      '<button type="button" class="urim-toggle-btn" data-filter="ts2009">TS2009</button>' +
+      '<button type="button" class="urim-toggle-btn" data-filter="living_preachers">Living Preachers</button>' +
+      '<button type="button" class="urim-toggle-btn" data-filter="deceased_preachers">Deceased Preachers</button>' +
+      '<button type="button" class="urim-toggle-btn" data-filter="apocrypha_enoch">Apocrypha & Enoch</button>' +
+      '</div></div>';
+    container.innerHTML = '<div class="native-view-header">Urim & Thummim</div><a href="#" class="back-to-iframe native-back-link">← Back to menu</a><div class="native-chat-card"><div class="native-chat-header"><div class="chat-card-title"><i class="fas fa-dove"></i> The Oracle</div><p class="native-chat-subtitle">Scripture-grounded counsel for your questions.</p></div>' + urimTogglesHtml + '<div class="urim-instruction">Ask your question below. The Oracle will respond with evidence and an authoritative word.</div><button type="button" class="urim-clear-btn" id="urim-clear">Clear History</button><div class="native-chat-wrap"><div class="native-chat-messages" id="urim-msgs"></div><form class="native-chat-form" id="urim-form"><textarea id="urim-input" placeholder="Ask your question…" rows="3"></textarea><button type="submit" id="urim-send" class="primary-chat-btn"><i class="fas fa-dove"></i> Seek the Oracle</button></form></div></div>';
     var urimBack = container.querySelector('.back-to-iframe, .native-back-link');
     if (urimBack) urimBack.addEventListener('click', backLinkHandler);
     var msgs = document.getElementById('urim-msgs');
     var form = document.getElementById('urim-form');
     var input = document.getElementById('urim-input');
     var sendBtn = document.getElementById('urim-send');
+    var clearBtn = document.getElementById('urim-clear');
     var csrfToken = null;
+    var urimHistory = [];
 
-    function appendMsg(role, text) {
-      var wrap = document.createElement('div');
-      wrap.className = 'native-chat-msg ' + role;
-      wrap.innerHTML = '<div class="msg-text">' + (role === 'user' ? escapeHtml(text).replace(/\n/g, '<br>') : text) + '</div>';
-      msgs.appendChild(wrap);
+    function appendUrimResponse(query, evidence, authoritative) {
+      var userWrap = document.createElement('div');
+      userWrap.className = 'native-chat-msg user';
+      userWrap.innerHTML = '<div class="msg-text">' + escapeHtml(query).replace(/\n/g, '<br>') + '</div>';
+      msgs.appendChild(userWrap);
+      var asstWrap = document.createElement('div');
+      asstWrap.className = 'native-chat-msg assistant urim-response';
+      var html = '';
+      if (evidence) html += '<div class="urim-evidence">' + evidence + '</div>';
+      if (authoritative) html += '<div class="urim-authoritative">' + authoritative + '</div>';
+      if (!html) html = '<div class="msg-text">No response.</div>';
+      asstWrap.innerHTML = html;
+      msgs.appendChild(asstWrap);
       msgs.scrollTop = msgs.scrollHeight;
     }
+
+    function saveUrimHistory(forceEmpty) {
+      if (!csrfToken && !forceEmpty) return;
+      var payload = { action: 'save_history', history: forceEmpty ? [] : urimHistory };
+      if (csrfToken) payload.csrf_token = csrfToken;
+      fetch(SITE + '/prayers/chatbot3_api.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        credentials: 'include'
+      }).then(function(r) { return r.json(); }).then(function(res) { if (res && res.csrf_token) csrfToken = res.csrf_token; }).catch(function() {});
+    }
+
+    fetch(SITE + '/prayers/chatbot3_api.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'load_history' }),
+      credentials: 'include'
+    }).then(function(r) { return r.json(); })
+      .then(function(res) {
+        if (res && res.csrf_token) csrfToken = res.csrf_token;
+        if (res && res.history && Array.isArray(res.history)) {
+          urimHistory = res.history;
+          res.history.forEach(function(entry) {
+            if (entry.query && entry.response) {
+              var ev = entry.response.evidence_bubble || '';
+              var auth = entry.response.authoritative_bubble || '';
+              appendUrimResponse(entry.query, ev, auth);
+            }
+          });
+        }
+      })
+      .catch(function() {});
+
+    clearBtn.addEventListener('click', function() {
+      urimHistory = [];
+      msgs.innerHTML = '';
+      saveUrimHistory(true);
+      if (clearBtn && clearBtn.blur) clearBtn.blur();
+    });
+
+    function setUrimToggleActive(filterName, active) {
+      var btn = container.querySelector('.urim-toggle-btn[data-filter="' + filterName + '"]');
+      if (btn) btn.classList.toggle('active', !!active);
+    }
+    function syncUrimToggleToServer(filterName, state, callback) {
+      var payload = { query: '__TOGGLE_EVENT__', filter_name: filterName, filter_state: state };
+      if (csrfToken) payload.csrf_token = csrfToken;
+      fetch(SITE + '/prayers/chatbot3_api.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        credentials: 'include'
+      }).then(function(r) { return r.json(); })
+        .then(function(res) {
+          if (res && res.csrf_token) csrfToken = res.csrf_token;
+          if (callback) callback(res);
+        })
+        .catch(function() { if (callback) callback({}); });
+    }
+    container.querySelectorAll('.urim-toggle-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var filterName = btn.getAttribute('data-filter');
+        var isActive = btn.classList.contains('active');
+        var nextState = !isActive;
+        var togglesToSync = [{ name: filterName, state: nextState }];
+        if (filterName === 'amplified' && !nextState) togglesToSync.push({ name: 'ts2009', state: true });
+        if (filterName === 'ts2009' && !nextState) togglesToSync.push({ name: 'amplified', state: true });
+        if (filterName === 'living_preachers' && nextState) togglesToSync.push({ name: 'deceased_preachers', state: false });
+        if (filterName === 'deceased_preachers' && nextState) togglesToSync.push({ name: 'living_preachers', state: false });
+        togglesToSync.forEach(function(t) { setUrimToggleActive(t.name, t.state); });
+        (function doSync(i) {
+          if (i >= togglesToSync.length) return;
+          syncUrimToggleToServer(togglesToSync[i].name, togglesToSync[i].state, function() { doSync(i + 1); });
+        })(0);
+      });
+    });
 
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       var text = (input.value || '').trim();
       if (!text) return;
-      appendMsg('user', text);
       input.value = '';
       sendBtn.disabled = true;
       msgs.insertAdjacentHTML('beforeend', '<div class="rl-loading">Consulting…</div>');
@@ -399,26 +648,36 @@
         credentials: 'include'
       }).then(function(r) { return r.json(); })
         .then(function(res) {
-          if (res.csrf_token) csrfToken = res.csrf_token;
+          if (res && res.csrf_token) csrfToken = res.csrf_token;
           var load = msgs.querySelector('.rl-loading');
           if (load) load.remove();
           if (res.error) {
-            appendMsg('assistant', res.error + (res.redirect ? ' <a href="' + SITE + res.redirect + '" target="_blank">Log in</a>' : ''));
+            var errWrap = document.createElement('div');
+            errWrap.className = 'native-chat-msg assistant';
+            errWrap.innerHTML = '<div class="msg-text">' + escapeHtml(res.error) + (res.redirect ? ' <a href="' + SITE + res.redirect + '" target="_blank">Log in</a>' : '') + '</div>';
+            msgs.appendChild(errWrap);
+            msgs.scrollTop = msgs.scrollHeight;
             sendBtn.disabled = false;
             return;
           }
-          var content = (res.evidence_bubble || '') + (res.authoritative_bubble ? '<br><br>' + res.authoritative_bubble : '') || res.answer || res.response || res.message || 'No response.';
-          appendMsg('assistant', content);
+          var ev = res.evidence_bubble || '';
+          var auth = res.authoritative_bubble || '';
+          appendUrimResponse(text, ev, auth);
+          urimHistory.push({ query: text, response: { evidence_bubble: ev, authoritative_bubble: auth }, timestamp: new Date().toISOString() });
+          saveUrimHistory(false);
           sendBtn.disabled = false;
         })
         .catch(function() {
           var load = msgs.querySelector('.rl-loading');
           if (load) load.remove();
-          appendMsg('assistant', 'Network error or session required. Please log in on the website to use Urim & Thummim.');
+          var errWrap = document.createElement('div');
+          errWrap.className = 'native-chat-msg assistant';
+          errWrap.innerHTML = '<div class="msg-text">Network error or session required. Please log in on the website to use Urim & Thummim.</div>';
+          msgs.appendChild(errWrap);
+          msgs.scrollTop = msgs.scrollHeight;
           sendBtn.disabled = false;
         });
     });
-    appendMsg('assistant', 'Ask your question and the Oracle will respond with scripture-grounded counsel.');
   }
 
   var P48_QUALITIES = ['Purity', 'Truth', 'Praiseworthy', 'Wholesome', 'Excellence', 'Admirable', 'Peace', 'Honorable', 'Lovely'];
@@ -464,16 +723,17 @@
       '<div class="native-view-header">P48X Reflections</div>' +
       '<a href="#" class="back-to-iframe native-back-link">← Back to menu</a>' +
       '<p class="p48x-scripture">"…whatever is true, honorable, just, pure, lovely, commendable—think about these things." — Philippians 4:8</p>' +
-      '<div class="native-chat-wrap p48x-wrap">' +
+      '<div class="p48x-card">' +
+      '<div class="p48x-wrap">' +
       '<div class="p48x-qualities-grid" id="p48x-qualities"></div>' +
-      '<div class="translator-row"><label>Reflection question</label><select id="p48x-question"></select></div>' +
-      '<div class="translator-row"><label>Your reflection</label><textarea id="p48x-entry" rows="4" placeholder="Write your reflection…"></textarea></div>' +
+      '<div class="p48x-form-row"><label>Reflection question</label><select id="p48x-question"><option value="">Select a quality above to begin your reflection.</option></select></div>' +
+      '<div class="p48x-form-row"><label>Your reflection</label><textarea id="p48x-entry" rows="4" placeholder="Write your reflection…"></textarea></div>' +
       '<button type="button" id="p48x-save" class="p48x-save-btn">Save entry</button>' +
+      '</div></div>' +
       calendarHtml +
       '<h3 class="p48x-journal-title">Your Journal History</h3>' +
-      '<p class="p48x-scroll-hint">Scroll down to see your journal entries after saving reflections.</p>' +
-      '<div class="native-p48x-list p48x-entries-list" id="p48x-list"><div class="rl-loading">Loading journal…</div></div>' +
-      '</div>';
+      '<p class="p48x-scroll-hint">*Scroll down to see your journal entries after saving reflections.</p>' +
+      '<div class="p48x-journal-card"><div class="native-p48x-list p48x-entries-list" id="p48x-list"><div class="rl-loading">Loading journal…</div></div></div>';
     var p48xBack = container.querySelector('.back-to-iframe, .native-back-link');
     if (p48xBack) p48xBack.addEventListener('click', backLinkHandler);
     var qualDiv = document.getElementById('p48x-qualities');
@@ -496,7 +756,7 @@
         btn.classList.add('active');
         selectedQuality = q;
         var questions = getQuestionsForQuality(q);
-        questionSel.innerHTML = '';
+        questionSel.innerHTML = '<option value="">Select a quality above to begin your reflection.</option>';
         questions.forEach(function(text) {
           var opt = document.createElement('option');
           opt.value = text;
@@ -508,7 +768,7 @@
     });
     (function() {
       var questions = getQuestionsForQuality('Purity');
-      questionSel.innerHTML = '';
+      questionSel.innerHTML = '<option value="">Select a quality above to begin your reflection.</option>';
       questions.forEach(function(text) {
         var opt = document.createElement('option');
         opt.value = text;
@@ -602,14 +862,38 @@
   function loadTranslatorInApp() {
     var container = el.nativeTranslator;
     if (!container) return;
-    container.innerHTML = '<div class="native-view-header">Spousal Translator</div><a href="#" class="back-to-iframe native-back-link">← Back to menu</a><div class="native-chat-wrap"><div class="translator-row"><label>I am</label><select id="trans-spouse"><option value="husband">Husband</option><option value="wife">Wife</option></select></div><div class="translator-row"><label>My name (optional)</label><input type="text" id="trans-name" placeholder="Your name"></div><div class="translator-row"><label>What you want to say (raw / emotional)</label><textarea id="trans-query" rows="4" placeholder="Type what you feel…"></textarea></div><button type="button" id="trans-submit">Translate with love</button><div class="native-chat-messages" id="trans-result"></div></div>';
+    container.innerHTML = '<div class="native-view-header">Spousal Translator</div><a href="#" class="back-to-iframe native-back-link">← Back to menu</a><div class="native-chat-card"><div class="native-chat-header"><div class="chat-card-title"><i class="fas fa-heart"></i> Spousal Translator</div><p class="native-chat-subtitle">Turn raw feelings into loving, biblical language your spouse can receive.</p></div><div class="native-chat-wrap translator-wrap"><div class="translator-card"><div class="trans-perspective-wrap"><span class="trans-perspective-title">Select your perspective</span><div class="trans-perspective-toggles"><button type="button" class="trans-perspective-btn active" data-spouse="husband"><i class="fas fa-male"></i> Husband to Wife</button><button type="button" class="trans-perspective-btn" data-spouse="wife"><i class="fas fa-female"></i> Wife to Husband</button></div></div><div class="translator-row"><label>I am</label><select id="trans-spouse"><option value="husband">Husband</option><option value="wife">Wife</option></select></div><div class="translator-row"><label>My name (optional)</label><input type="text" id="trans-name" placeholder="Your name"></div><div class="translator-row"><label>What you want to say (raw / emotional)</label><textarea id="trans-query" rows="4" placeholder="Type what you feel…"></textarea></div><button type="button" id="trans-submit" class="translator-submit-btn"><i class="fas fa-heart"></i> Translate with love</button></div><div class="native-chat-messages translator-results" id="trans-result"></div></div></div>';
     var transBack = container.querySelector('.back-to-iframe, .native-back-link');
     if (transBack) transBack.addEventListener('click', backLinkHandler);
     var resultDiv = document.getElementById('trans-result');
     var spouseSel = document.getElementById('trans-spouse');
+    container.querySelectorAll('.trans-perspective-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var val = btn.getAttribute('data-spouse');
+        if (spouseSel) spouseSel.value = val;
+        container.querySelectorAll('.trans-perspective-btn').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+      });
+    });
+    if (spouseSel) spouseSel.addEventListener('change', function() {
+      var val = spouseSel.value;
+      container.querySelectorAll('.trans-perspective-btn').forEach(function(b) {
+        b.classList.toggle('active', b.getAttribute('data-spouse') === val);
+      });
+    });
     var nameInput = document.getElementById('trans-name');
     var queryEl = document.getElementById('trans-query');
     var submitBtn = document.getElementById('trans-submit');
+    var lastOriginal = '';
+    var lastTranslation = '';
+
+    function renderResult(query, data) {
+      var orig = escapeHtml(query).replace(/\n/g, '<br>');
+      var trans = escapeHtml(data.translation).replace(/\n/g, '<br>');
+      var html = '<div class="translated-response-card"><div class="translated-title-area"><span class="translated-label">What you said</span></div><div class="translated-original-text">' + orig + '</div><div class="translated-title-area"><span class="translated-label">Biblical Translation</span></div><div class="translated-text">' + trans + '</div><div class="translator-save-row"><button type="button" class="translator-save-btn" id="trans-save-btn">💾 Save this translation</button><span class="translator-save-feedback" id="trans-save-feedback"></span></div></div>';
+      if (data.action_steps && data.action_steps.length) html += '<div class="native-chat-msg assistant"><div class="msg-text"><strong>Steps:</strong> ' + escapeHtml(data.action_steps.join('; ')) + '</div></div>';
+      return html;
+    }
 
     submitBtn.addEventListener('click', function() {
       var query = (queryEl.value || '').trim();
@@ -635,8 +919,36 @@
         var load = resultDiv.querySelector('.rl-loading');
         if (load) load.remove();
         if (data.translation) {
-          resultDiv.innerHTML = '<div class="native-chat-msg assistant"><div class="msg-text">' + escapeHtml(data.translation).replace(/\n/g, '<br>') + '</div></div>';
-          if (data.action_steps && data.action_steps.length) resultDiv.innerHTML += '<div class="native-chat-msg assistant"><div class="msg-text"><strong>Steps:</strong> ' + escapeHtml(data.action_steps.join('; ')) + '</div></div>';
+          lastOriginal = query;
+          lastTranslation = data.translation;
+          resultDiv.innerHTML = renderResult(query, data);
+          var saveBtn = document.getElementById('trans-save-btn');
+          var feedback = document.getElementById('trans-save-feedback');
+          if (saveBtn) saveBtn.addEventListener('click', function() {
+            saveBtn.disabled = true;
+            feedback.textContent = 'Saving…';
+            feedback.className = 'translator-save-feedback';
+            var body = 'original=' + encodeURIComponent(lastOriginal) + '&translation=' + encodeURIComponent(lastTranslation) + '&spouse_perspective=' + encodeURIComponent(spouseSel.value);
+            fetch(SITE + '/translator/save_translation.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: body,
+              credentials: 'include'
+            }).then(function(sr) { return sr.json(); }).then(function(res) {
+              if (res.status === 'success') {
+                feedback.textContent = '✓ Saved!';
+                feedback.className = 'translator-save-feedback success';
+              } else {
+                feedback.textContent = res.message || 'Could not save.';
+                feedback.className = 'translator-save-feedback error';
+                saveBtn.disabled = false;
+              }
+            }).catch(function() {
+              feedback.textContent = 'Network error.';
+              feedback.className = 'translator-save-feedback error';
+              saveBtn.disabled = false;
+            });
+          });
         } else resultDiv.innerHTML = '<div class="rl-error">' + (data.error || 'Translation failed.') + '</div>';
       }).catch(function() {
         var load = resultDiv.querySelector('.rl-loading');
@@ -668,6 +980,18 @@
     var header = container.querySelector('.native-view-header');
     if (!header) {
       container.insertAdjacentHTML('afterbegin', '<div class="native-view-header">Bible Map</div><a href="#" class="back-to-iframe native-back-link">← Back to menu</a>');
+      var back = container.querySelector('.native-back-link');
+      if (back) back.addEventListener('click', backLinkHandler);
+    }
+  }
+
+  function loadSpiritualGiftsInApp() {
+    var container = el.nativeSpiritualgifts;
+    if (!container) return;
+    if (el.spiritualgiftsFrame) el.spiritualgiftsFrame.src = SITE + '/prayers/spiritual_gifts_test.php';
+    var header = container.querySelector('.native-view-header');
+    if (!header) {
+      container.insertAdjacentHTML('afterbegin', '<div class="native-view-header">Spiritual Gifts Test</div><a href="#" class="back-to-iframe native-back-link">← Back to menu</a>');
       var back = container.querySelector('.native-back-link');
       if (back) back.addEventListener('click', backLinkHandler);
     }
