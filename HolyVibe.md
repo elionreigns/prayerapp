@@ -296,3 +296,57 @@ These are **done** in both **localapp/** (repo/iOS build) and **public_html/app/
 | **Bible Map (site)** | Extra top spacing so the breadcrumb bar has breathing room below the header (map page only). |
 
 **Repo vs app folder:** `localapp/www/` (js + css) and `public_html/app/` (js + css) are kept in sync for these behaviors. Push repo after changes; to match the live site app, deploy `localapp/www/` contents to `public_html/app/`.
+
+---
+
+## Part 10c: Golden standard review — implementation vs. your requirements
+
+This section confirms that **everything you asked for** is implemented correctly in both the **app folder** (`public_html/app/`) and the **repo** (`localapp/www/`). Use it as the single checklist so you’re not left wondering.
+
+### Chatbots & tools (app native screens)
+
+| Requirement | Implementation | Status |
+|-------------|----------------|--------|
+| **Biblical Counsel** — Choose one counselor or All; same 13 options (All, Nathan, Ahitophel, Jehoshaphat, Daniel, Elders, Solomon, Jesus, Moses, Enoch, John, Paul, Peter) with correct API values | `COUNSELOR_OPTIONS` with values `all`, `nathan`, `ahitophel_loyal`, etc.; `personas` sent as JSON array; `comprehensive_mode` when single counselor | ✅ Done |
+| **Biblical Counsel** — Intro “The council gathers…” visible and readable | `.native-chat-msg.initial-greeting` and `.msg-text` use `color: #1a1a1a` (dark on light card) | ✅ Done |
+| **Biblical Counsel** — Response shows counselor name + text; optional follow_up | Renders `data.counsel[name]` with `.counselor-title` + `.msg-text`; appends `data.follow_up` | ✅ Done |
+| **Dream Interpreter** — Greeting from API; load/save history | On open: `load_history` then `generate_greeting` if empty; after each exchange `save_history`; New dream / Clear / Save session wired | ✅ Done |
+| **Dream Interpreter** — Emotional Tone, Colors, Numbers, Dream Type (match site) | Four dropdowns with same options; values sent on first `action=interpret` to `dreambot_api.php`; `none`/`not_sure` sent as empty | ✅ Done |
+| **Urim & Thummim** — Instruction bubble; load/save/clear history | Instruction: “Ask your question below. The Oracle will respond with evidence and an authoritative word.” Load history on open; save after each reply; Clear History clears UI and saves empty | ✅ Done |
+| **Urim & Thummim** — Response as evidence + authoritative (two segments) | `appendUrimResponse(query, evidence, authoritative)`; `.urim-evidence` and `.urim-authoritative`; API returns `evidence_bubble`, `authoritative_bubble` | ✅ Done |
+| **Urim & Thummim** — Source toggles (Amplified, TS2009, Living/Deceased Preachers, Apocrypha & Enoch) | Toggles sync to server via `__TOGGLE_EVENT__`; session filters used for next chat | ✅ Done |
+| **Spousal Translator** — “I am” (Husband/Wife), optional name, “What you want to say”, “Translate with love” | Perspective toggles + dropdown; optional name; textarea; button “Translate with love”; API `translator/chatbot_api.php` | ✅ Done |
+| **Spousal Translator** — Two cards: “What you said” + “Biblical Translation” | `renderResult()` outputs `.translated-label` “What you said” + original, then “Biblical Translation” + translation; optional action_steps | ✅ Done |
+| **Spousal Translator** — Save this translation | “Save this translation” button; `save_translation.php`; feedback message | ✅ Done |
+
+### P48X Reflections
+
+| Requirement | Implementation | Status |
+|-------------|----------------|--------|
+| Click quality → **random question** (no dropdown) | Quality buttons; on click `setRandomQuestionForQuality(q)` picks random from `getQuestionsForQuality(q)`; displayed in `.p48x-question-display` | ✅ Done |
+| Hint: click to get/randomize question | “Click a quality above to get a random question; click again to get a different one.” (`.p48x-question-hint`) | ✅ Done |
+| Save entry sends question + quality + text | `currentQuestion` and `selectedQuality` sent with `save_entry` to `p48x_ajax.php` | ✅ Done |
+| Google Calendar Connect + Activate Daily Schedule; empty state; icons | Calendar section with buttons; journal history; empty/error copy; Font Awesome icons per quality | ✅ Done |
+
+### App shell & UX
+
+| Requirement | Implementation | Status |
+|-------------|----------------|--------|
+| Chat input **not sticky** (scrolls with page) | `.native-chat-form` has no `position: sticky`; padding and border only | ✅ Done |
+| Login state in header + drawer | `app_login_status.php`; username + green dot; “Signed in as [name]” in drawer | ✅ Done |
+| Native views for Red Letters, Dreams, Counsel, Urim, P48X, Translator, David vs Goliath, Bible Map | `NATIVE_PATHS` and `load*InApp()` for each; correct API endpoints and payloads | ✅ Done |
+
+### Site-only (width & layout)
+
+| Requirement | Implementation | Status |
+|-------------|----------------|--------|
+| Contact / Love / Counsel / Altar — content width (not full-width) | Main has side padding; inner container (e.g. `.contact-container`, `.love-container`, `.altar-container`) `max-width: 920px`, `margin: 2rem auto` | ✅ Done |
+| Bible Map — better spacing at top | `body.bible-map-page .breadcrumbs-container` given extra `margin-top` (mobile + desktop) in `map/index.php` | ✅ Done |
+| Counsel (site) — single scrollbar; chatbot above “Meet The Council” | `html` overflow; chat area min-height only; flex order so Victory Chat is above counselor cards | ✅ Done (per prior work) |
+
+### Parity: repo vs app folder
+
+- **localapp/www/js/app.js** and **localapp/www/css/shell.css** (repo) are kept in sync with **public_html/app/js/app.js** and **public_html/app/css/shell.css** for: Dreams dropdowns, Counsel intro color, non-sticky form, P48X random question + hint + display, Urim/Counsel/Translator behavior, and styling.
+- To ship the same experience on the website app, deploy **contents of localapp/www/** to **public_html/app/** (and set `<base href="/app/">` on the server).
+
+**Bottom line:** All of the above requirements are implemented to the golden standard. If you spot anything that doesn’t match this in production, it’s likely a deploy/sync step (e.g. app folder not updated from repo) rather than missing code.
