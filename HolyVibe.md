@@ -184,7 +184,7 @@ You want **two iPhone apps** (Power Prayer and Complimentinator) that feel **fre
 ### What’s built today (meets your requirements) — **DONE**
 - **Repo:** **elionreigns/prayerapp** (this repo). **App Store build source:** `localapp/` — build from here with Codemagic (or Xcode) for iOS.
 - **What syncs with the website (iframe only):** Login, Register, Dashboard, Prayed, Requests, and **all prayer forms** (Prayers Home, Ask, Altar, Healing, Salvation, Jehoshaphat, Bank, Forgive, Red Letters link, etc.). One account; membership and prayer data stay on the site. See **APP-ARCHITECTURE.md**.
-- **What’s built into the app (native or in-app UI):** Red Letters (API + cache), Dream Interpreter, Biblical Counsel, Urim & Thummim, Spousal Translator, **P48X Reflections** (with Font Awesome icons, Google Calendar “Connect” + “Activate Daily Schedule,” warm calendar card styling, empty state “There are no entries yet”), David vs Goliath (local game), Bible Map (in-app iframe). Vitamins and Battle Sword open in-app (iframe to site). Spiritual Gifts Test opens in iframe (site). Same shell and menu; **login state:** header shows **username + green dot** when logged in; drawer shows “Signed in as [name].” (Requires **app_login_status.php** on live site — see DEPLOY-THESE-TO-LIVE.txt.)
+- **What’s built into the app (native or in-app UI):** Red Letters (API + cache), **Dream Interpreter** (Emotional Tone, Colors, Numbers, Dream Type dropdowns wired to API), **Biblical Counsel** (intro in dark text; chat input scrolls with page), Urim & Thummim, Spousal Translator, **P48X Reflections** (click a quality → random question shown above reflection; hint: “Click a quality above to get a random question; click again to get a different one”; Font Awesome icons, Google Calendar “Connect” + “Activate Daily Schedule,” warm calendar card, empty state “There are no entries yet”), David vs Goliath (local game), Bible Map (in-app iframe). Vitamins and Battle Sword open in-app (iframe to site). Spiritual Gifts Test opens in iframe (site). Same shell and menu; **login state:** header shows **username + green dot** when logged in; drawer shows “Signed in as [name].” (Requires **app_login_status.php** on live site — see DEPLOY-THESE-TO-LIVE.txt.)
 - **App storage:** Last path, optional start path, Red Letters cache. No API keys or secrets in repo; only SITE_URL (from app-config on your server when hosted).
 - **App Store readiness:** Repo is **pushed to GitHub** and ready for Codemagic. You still need: Apple Developer Program ($99/year), privacy policy URL on your site, App Store Connect listing (description, screenshots, etc.), then build → upload .ipa → submit. See checklist in Part 9.
 - **Next (optional, not required for this submit):** Spiritual Gifts as native flow with save/top 3; Sign in with Apple if required; Complimentinator as second app.
@@ -230,7 +230,7 @@ Your requirements for the **Power Prayer app** (so it’s ready for Codemagic �
 |-------------|--------|
 | **Login / membership synced with website** (Login, Register, Dashboard, Prayed, Requests, all prayer forms in iframe) | Done — one account; session shared. |
 | **Red Letters, Bible Map, chatbots, P48X, David vs Goliath, Vitamins, Battle Sword** in the app (not all pulled from website; built in-app or in-app view) | Done — native/in-app for Red Letters, Dreams, Counsel, Urim, Translator, P48X, David vs Goliath, Bible Map; Vitamins/Battle Sword open in-app (iframe). |
-| **P48X** looks beautiful, not barebones; **Google Calendar sync** (Connect + Activate Daily Schedule); **colors/icons** match or beat the site; **empty state** “no entries yet” not “could not load journal” | Done — Font Awesome icons on qualities + calendar buttons; warm calendar card; empty copy and error copy updated. |
+| **P48X** looks beautiful, not barebones; **click quality → random question** (no dropdown); hint text tells user to click to randomize; **Google Calendar sync** (Connect + Activate Daily Schedule); **colors/icons** match or beat the site; **empty state** “no entries yet” | Done — Random question on quality click; hint; Font Awesome icons; warm calendar card; empty/error copy updated. |
 | **Logged-in state in app:** **username at top + green dot**; drawer shows **“Signed in as [name]”** | Done — `app_login_status.php` on site; header and drawer wired. |
 | **Repo ready for Codemagic** so you can build iOS and submit to App Store | Done — elionreigns/prayerapp pushed; build from `localapp/`. |
 
@@ -241,3 +241,58 @@ Your requirements for the **Power Prayer app** (so it’s ready for Codemagic �
 **App folder on site:** To make https://www.prayerauthority.com/app/ match the iOS build, upload **contents of localapp/www/** to **public_html/app/** and add `<base href="/app/">` in index.html on the server.
 
 For **how login and chatbots work** when someone downloads the app (same session, same account, no “disconnect” from the website), see **APP-LOGIN-AND-CHATBOT-FLOW.md**.
+
+---
+
+## Part 10: App–Site Parity — Tools Must Match the Website
+
+The in-app native screens for **Spousal Translator**, **Dream Interpreter**, **Biblical Counsel**, and **Urim & Thummim** must **look and behave like the site**, not bare-bones placeholders. Work from the live site code and APIs until parity is done.
+
+### Spousal Translator (site: `public_html/translator/index.php`, API: `translator/chatbot_api.php`)
+- **Layout:** "I am" dropdown (Husband / Wife), optional "My name", label "What you want to say (raw / emotional)" with textarea, primary button **"Translate with love"**.
+- **Response:** Show two cards as on the site: **"What you said"** (original text) and **"Biblical Translation"** (translation). Same visual hierarchy (title area + content). No single plain message blob.
+- **Optional:** "Save Chat" / saved translations list if the site exposes save/load (translations table, `spouse_perspective`, etc.). Match site behavior.
+- **Styling:** Gradient or blue/gold card container, readable typography; not a minimal grey form.
+
+### Biblical Counsel (site: `public_html/counsel/index.php`, API: `counsel/chatbot_api.php`)
+- **Toggles:** User must be able to choose **one counselor** or **All**. Same radio/toggle set as on the site: All, Nathan, Ahitophel, Jehoshaphat, Daniel, Elders, Solomon, יהושע (Jesus), Moses, Enoch, John, Paul, Peter. Values: `all`, `nathan`, `ahitophel_loyal`, `jehoshaphat`, `daniel`, `elders_of_israel`, `king_solomon`, `jesus_christ_yeshua`, `moses`, `enoch`, `john_the_apostle`, `paul_the_apostle`, `peter_the_apostle`.
+- **Request:** Send `personas` as JSON array of selected value(s), e.g. `["all"]` or `["king_solomon"]`; `comprehensive_mode`: true when a single counselor is selected.
+- **Response:** Render each counselor's response with **counselor name** and text (same structure as site). Optional speech controls if feasible.
+- **Intro:** Initial greeting from the council (e.g. "The council gathers… What is the nature of the situation you face?") so it feels like the site.
+
+### Urim & Thummim (site: `public_html/prayers/urim2.php`, API: `prayers/chatbot3_api.php`)
+- **Instruction:** Prominent **instruction bubble** at top: e.g. "Ask your question and the Oracle will respond with scripture-grounded counsel." Match site copy and placement.
+- **History:** **Load history** on open: `POST` `action: 'load_history'` (JSON), then render past Q&A from `history` (query + evidence_bubble + authoritative_bubble). **Save history** after each exchange: append to local history array, `POST` `action: 'save_history'`, body `{ action, history, csrf_token }`. Use same format as site (query/response with evidence_bubble, authoritative_bubble).
+- **Clear History:** Button **"Clear History"** that clears local state and calls save with empty history. Confirm or inline as on site.
+- **UI:** Input placeholder "Ask your question…", button **"Seek the Oracle"**. Response shows evidence + authoritative segments (e.g. two bubbles or styled blocks), not one flat string.
+
+### Dream Interpreter (site: `public_html/prayers/dreams.php`, API: `prayers/dreambot_api.php`)
+- **Greeting:** Load initial greeting from API (`action=generate_greeting`) and show as first message from "Dreamstone". Same copy/vibe as site.
+- **History:** On open, call **load_history** if the API supports it (e.g. `action: 'load_history'`); render past messages. After each user/assistant exchange, call **save_history** with full chat history array so sessions persist across app opens.
+- **Dropdowns (match site):** **Emotional Tone**, **Colors**, **Numbers**, **Dream Type** — same options as site; values sent with first interpret request to `dreambot_api.php` so interpretations use them.
+- **UI:** Chat thread with user vs Dreamstone messages; placeholder "Describe your dream or ask a follow-up…", button "Interpret / Send". Style message bubbles to match site (Dreamstone distinct from user).
+
+### Implementation order
+1. Update **HolyVibe.md** (this section) and keep it as the checklist.
+2. Implement **Spousal Translator** (form + dual-card response + styling).
+3. Implement **Biblical Counsel** (toggles + personas + intro + response layout).
+4. Implement **Urim** (instruction bubble + load/save/clear history + response segments).
+5. Implement **Dream Interpreter** (greeting + load/save history + Emotional Tone/Colors/Numbers/Dream Type + styling).
+
+Sync the same behavior and assets to **public_html/app/** (browser app shell) so the in-browser app matches the native build.
+
+---
+
+## Part 10b: Parity & UX polish (completed)
+
+These are **done** in both **localapp/** (repo/iOS build) and **public_html/app/** (browser app) so you’re not left wondering.
+
+| Item | What was done |
+|------|----------------|
+| **Dream Interpreter** | Emotional Tone, Colors, Numbers, Dream Type dropdowns added; values sent to `dreambot_api.php` on first interpret. Matches site. |
+| **Biblical Counsel** | Intro card (“The council gathers…”) uses **dark text** (#1a1a1a) on the light background so it’s readable (no white-on-white). |
+| **Chat input (all native views)** | **Not sticky** — input area scrolls with the page instead of sticking to the bottom. |
+| **P48X Reflections** | **No dropdown.** Click a quality (Purity, Truth, etc.) → a **random question** appears in the box above “Your reflection.” Hint text: “Click a quality above to get a random question; click again to get a different one.” Save still sends the displayed question + quality. |
+| **Bible Map (site)** | Extra top spacing so the breadcrumb bar has breathing room below the header (map page only). |
+
+**Repo vs app folder:** `localapp/www/` (js + css) and `public_html/app/` (js + css) are kept in sync for these behaviors. Push repo after changes; to match the live site app, deploy `localapp/www/` contents to `public_html/app/`.
